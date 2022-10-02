@@ -33,7 +33,7 @@ class SwitchtimeDetermination extends IPSModule
 
         $this->RegisterPropertyInteger('eventID', 0);
 
-        $this->RegisterPropertyInteger('holiday_varID', 0);
+        $this->RegisterPropertyInteger('holiday_scriptID', 0);
 
         $this->RegisterAttributeString('UpdateInfo', '');
 
@@ -84,13 +84,13 @@ class SwitchtimeDetermination extends IPSModule
                 $name = $time_def['name'];
                 if ($name == '') {
                     $this->SendDebug(__FUNCTION__, 'name for range ' . $actionID . ' must be defined', 0);
-                    $r[] = $this->TranslateFormat('Name for range {$action} must be defined', ['{$action}' => $action]);
+                    $r[] = $this->TranslateFormat('Name for range {$actionID} must be defined', ['{$actionID}' => $actionID]);
                     continue;
                 }
                 $varID = $time_def['varID'];
                 if (IPS_VariableExists($varID) == false) {
                     $this->SendDebug(__FUNCTION__, '"varID" for range ' . $actionID . ' must be defined', 0);
-                    $r[] = $this->TranslateFormat('Reference variable for "{$name}" must be defined', ['{$action}' => $action, '{$name}' => $name]);
+                    $r[] = $this->TranslateFormat('Reference variable for "{$name}" must be defined', ['{$actionID}' => $actionID, '{$name}' => $name]);
                     continue;
                 }
                 $var = IPS_GetVariable($varID);
@@ -98,9 +98,9 @@ class SwitchtimeDetermination extends IPSModule
                 if ($varprof == false) {
                     $varprof = $var['VariableProfile'];
                 }
-                if ($varprof != '~UnixTimestamp') {
+                if (preg_match('/^~UnixTimestamp/', $varprof) == false) {
                     $this->SendDebug(__FUNCTION__, '"varID" for range ' . $actionID . ' must have variable profile "~UnixTimestamp"', 0);
-                    $r[] = $this->Translate('Reference variable for "{$name}" must have variable profile "~UnixTimestamp"', ['{$action}' => $action, '{$name}' => $name]);
+                    $r[] = $this->Translate('Reference variable for "{$name}" must have variable profile "~UnixTimestamp"', ['{$actionID}' => $actionID, '{$name}' => $name]);
                 }
             }
         }
@@ -114,7 +114,7 @@ class SwitchtimeDetermination extends IPSModule
 
         $propertyNames = [
             'eventID',
-            'holiday_varID',
+            'holiday_scriptID',
         ];
         $this->MaintainReferences($propertyNames);
 
@@ -177,17 +177,17 @@ class SwitchtimeDetermination extends IPSModule
 
         $this->MaintainStatus(IS_ACTIVE);
 
+        $varIDs = [];
         $propertyNames = [
-            'holiday_varID',
+            'eventID',
         ];
         foreach ($propertyNames as $propertyName) {
-            $varID = $this->ReadPropertyInteger($propertyName);
-            if (IPS_VariableExists($varID)) {
-                $this->RegisterMessage($varID, VM_UPDATE);
-            }
+            $varIDs[] = $this->ReadPropertyInteger($propertyName);
         }
         foreach ($time_definitions as $time_def) {
-            $varID = $time_def['varID'];
+            $varIDs[] = $time_def['varID'];
+        }
+        foreach ($varIDs as $varID) {
             if (IPS_VariableExists($varID)) {
                 $this->RegisterMessage($varID, VM_UPDATE);
             }
@@ -268,18 +268,10 @@ class SwitchtimeDetermination extends IPSModule
         ];
 
         $formElements[] = [
-            'type'    => 'Label',
-        ];
-        $formElements[] = [
-            'name'               => 'holiday_varID',
-            'type'               => 'SelectVariable',
-            'validVariableTypes' => [VARIABLETYPE_BOOLEAN],
+            'name'               => 'holiday_scriptID',
+            'type'               => 'SelectScript',
             'width'              => '500px',
-            'caption'            => 'Variable for holіday detection',
-        ];
-        $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'Holidays are treated like Sundays',
+            'caption'            => 'Script for recognizing holidays (treat like Sundays)',
         ];
 
         return $formElements;
@@ -400,13 +392,21 @@ class SwitchtimeDetermination extends IPSModule
 
             $this->SendDebug(__FUNCTION__, '... new_tstamp=' . date('d.m.Y H:i:s', $new_tstamp) . ', wday=' . $wday, 0);
 
-            $holiday_varID = $this->ReadPropertyInteger('holiday_varID');
-            if (IPS_VariableExists($holiday_varID)) {
-                $isholiday = GetValueBoolean($holiday_varID);
-                if ($isholiday) {
-                    $wday = 6; // Sonntag
+            $holiday_scriptID = $this->ReadPropertyInteger('holiday_scriptID');
+            if (IPS_ScriptExists($holiday_scriptID)) {
+                $params = [
+                    'TSTAMP' => $new_tstamp,
+                ];
+                @$s = IPS_RunScriptWaitEx($holiday_scriptID, $params);
+                $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $holiday_scriptID . ', ' . print_r($params, true) . ')=' . $s, 0);
+                $isHoliday = filter_var($s, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                if (is_null($isHoliday)) {
+                    $isHoliday = $s != '';
                 }
-                $this->SendDebug(__FUNCTION__, '... isholiday=' . $this->bool2str($isholiday) . ', wday=' . $wday, 0);
+                if ($isHoliday) {
+                    $wday = 6; // Sonntag
+                    $this->SendDebug(__FUNCTION__, '... is holiday, wday => ' . $wday, 0);
+                }
             }
 
             $eventID = $this->ReadPropertyInteger('eventID');

@@ -25,8 +25,7 @@
 
 			"Additional random time offset": "Zusätzlicher zufälliger Zeitversatz",
 
-			"Variable for holіday detection": "Variable zur Erkennung von Feiertagen",
-			"Holidays are treated like Sundays": "Feiertage werden wie Sonntage behandelt",
+			"Script for recognizing holidays (treat like Sundays)": "Skript zur Erkennung von Feiertagen (behandeln wie Sonntage)",
 
 			"__actions__": "",
 			"Check conditions": "Bedingungen prüfen",
