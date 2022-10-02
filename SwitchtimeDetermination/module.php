@@ -64,32 +64,32 @@ class SwitchtimeDetermination extends IPSModule
 
         $eventID = $this->ReadPropertyInteger('eventID');
         if (IPS_EventExists($eventID) == false) {
-            $this->SendDebug(__FUNCTION__, '"$eventID" must be defined', 0);
+            $this->SendDebug(__FUNCTION__, '"eventID" must be defined', 0);
             $r[] = $this->Translate('Weekplan event must be defined');
         } else {
             $event = IPS_GetEvent($eventID);
             if ($event['EventType'] != EVENTTYPE_SCHEDULE) {
-                $this->SendDebug(__FUNCTION__, '"$eventID" must must be a schedule event', 0);
+                $this->SendDebug(__FUNCTION__, '"eventID" must must be a schedule event', 0);
                 $r[] = $this->Translate('Weekplan event has the wrong event type');
             }
         }
 
         $time_definitions = json_decode($this->ReadPropertyString('time_definitions'), true);
         if ($time_definitions == false || count($time_definitions) == 0) {
-            $this->SendDebug(__FUNCTION__, 'at least 1 phase must be defined', 0);
-            $r[] = $this->Translate('At least 1 phase must be defined');
+            $this->SendDebug(__FUNCTION__, 'at least one range must be defined', 0);
+            $r[] = $this->Translate('At least one range must be defined');
         } else {
             for ($actionID = 1; $actionID <= count($time_definitions); $actionID++) {
                 $time_def = $time_definitions[$actionID - 1];
                 $name = $time_def['name'];
                 if ($name == '') {
-                    $this->SendDebug(__FUNCTION__, 'name for phase ' . $actionID . ' must be defined', 0);
+                    $this->SendDebug(__FUNCTION__, 'name for range ' . $actionID . ' must be defined', 0);
                     $r[] = $this->TranslateFormat('Name for range {$action} must be defined', ['{$action}' => $action]);
                     continue;
                 }
                 $varID = $time_def['varID'];
                 if (IPS_VariableExists($varID) == false) {
-                    $this->SendDebug(__FUNCTION__, '"$varID" for phase ' . $actionID . ' must be defined', 0);
+                    $this->SendDebug(__FUNCTION__, '"varID" for range ' . $actionID . ' must be defined', 0);
                     $r[] = $this->TranslateFormat('Reference variable for "{$name}" must be defined', ['{$action}' => $action, '{$name}' => $name]);
                     continue;
                 }
@@ -99,7 +99,7 @@ class SwitchtimeDetermination extends IPSModule
                     $varprof = $var['VariableProfile'];
                 }
                 if ($varprof != '~UnixTimestamp') {
-                    $this->SendDebug(__FUNCTION__, '"$varID" for phase ' . $actionID . ' must have variable profile "~UnixTimestamp"', 0);
+                    $this->SendDebug(__FUNCTION__, '"varID" for range ' . $actionID . ' must have variable profile "~UnixTimestamp"', 0);
                     $r[] = $this->Translate('Reference variable for "{$name}" must have variable profile "~UnixTimestamp"', ['{$action}' => $action, '{$name}' => $name]);
                 }
             }
