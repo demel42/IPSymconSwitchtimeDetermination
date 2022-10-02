@@ -1,0 +1,42 @@
+{
+	"translations": {
+		"de": {
+			"Switchtime determination": "Schaltzeit ermitteln",
+
+			"__function__": "CheckConfiguration",
+			"Weekplan event must be defined": "Wochenplan-Ereignis muss angegeben sein",
+			"Weekplan event has the wrong event type": "Wochenplan-Ereignis hat den falschen Ereignis-Typ",
+
+			"At least one range must be defined": "Mindestens ein Bereich muss definiert sein",
+			"Name for range {$action} must be defined": "Name für Bereich {$action} muss definiert sein",
+			"Reference variable for \"{$name}\" must be defined": "Referenzvariable für \"{$name}\" muss definiert sein",
+			"Reference variable for \"{$name}\" must have variable profile \"~UnixTimestamp\"": "Referenzvariable für \"{$name}\" muss Variablenprofil \"~UnixTimestamp\" haben",
+
+			"__properties__": "",
+			"Disable instance": "Instanz deaktivieren",
+
+			"Switchtime range definitions": "Schaltzeit-Bereich-Definitionen",
+			"Name of switchtime": "Name der Schaltzeit",
+			"Reference variable": "Referenz-Variable",
+			"Time offset": "Zeitversatz",
+			" Seconds": " Sekunden",
+
+			"Weekplan event": "Wochenplan-Ereignis",
+
+			"Additional random time offset": "Zusätzlicher zufälliger Zeitversatz",
+
+			"Variable for holіday detection": "Variable zur Erkennung von Feiertagen",
+			"Holidays are treated like Sundays": "Feiertage werden wie Sonntage behandelt",
+
+			"__actions__": "",
+			"Check conditions": "Bedingungen prüfen",
+			"Create weekplan event": "Wochenplan-Ereignis erzeugen",
+
+			"__action__": "CreateWeekplanEvent",
+			"Rest period": "Ruhephase",
+			"Switchtime ranges": "Schaltzeit-Bereiche",
+
+			"__end__": ""
+		}
+	}
+}

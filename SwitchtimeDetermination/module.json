@@ -1,0 +1,12 @@
+{
+	"id": "{A7DF41FE-B7D0-391E-5D9C-10F3659F06AC}",
+	"name": "Switchtime determination",
+	"type": 3,
+	"vendor": "",
+	"aliases": [],
+	"parentRequirements": [],
+	"childRequirements": [],
+	"implemented": [],
+	"prefix": "SwitchtimeDetermination",
+	"url": "https://github.com/demel42/SwitchtimeDetermination/blob/master/README.md"
+}

@@ -24,8 +24,10 @@
 
 ### a. Installation des Moduls
 
-Im [Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff *ModuleTemplate* zu finden.<br>
-Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL `https://github.com/demel42/ModuleTemplate.git` installiert werden.
+Im [Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff
+*Schaltzeit ermitteln* zu finden.<br>
+Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL
+`https://github.com/demel42/SwitchtimeDetermination.git` installiert werden.
 
 ### b. Einrichtung in IPS
 
@@ -35,7 +37,7 @@ alle Funktionen sind über _RequestAction_ der jew. Variablen ansteuerbar
 
 ## 5. Konfiguration
 
-### ModuleTemplate Device
+### Schaltzeiten ermitteln (SwitchtimeDetermination)
 
 #### Properties
 
@@ -60,14 +62,14 @@ Es werden folgende Variablenprofile angelegt:
 ## 6. Anhang
 
 ### GUIDs
-- Modul: `{0DCE4B6F-9176-DC9A-5502-1AF2B7573EB5}`
+- Modul: `{0C1859DD-4610-4990-D3D9-6A6F058F4102}`
 - Instanzen:
-  - ModuleTemplateDevice: `{B052AEAB-2687-02EB-DF40-74191E242A0B}`
+  - SwitchtimeDetermination: `{A7DF41FE-B7D0-391E-5D9C-10F3659F06AC}`
 - Nachrichten:
 
 ### Quellen
 
 ## 7. Versions-Historie
 
-- 0.9 @ dd.mm.yyyy HH:MM (beta)
+- 0.9 @ 02.10.2022 15:54
   - Initiale Version

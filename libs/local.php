@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-trait ModuleTemplateLocalLib
+trait SwitchtimeDeterminationLocalLib
 {
     private function GetFormStatus()
     {
