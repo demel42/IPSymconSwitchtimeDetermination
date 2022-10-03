@@ -70,19 +70,28 @@ Es gibt keine Funktionen des Moduls.
 | ... Referenz-Variable     | integer  | 0            | Variable vom Typ ~UnixTimestamp |
 | ... Zeitversatz           | integer  | 0            | Zeitversatz in Sekunden |
 |                           |          |              | |
-| Wochenplan-Ereignis       | integer  | 0            | Wochenplan [^1] |
+| Wochenplan-Ereignis       | integer  | 0            | Wochenplan _[1]_ |
 |                           |          |              | |
 | zufälliger Zeitversatz    | integer  | 0            | Maximaler zusätzlicher zufälliger Zeitversatz in Sekunden, der zu der ermittelten Zeit hinzugefügt wird. |
 |                           |          |              | |
-| Erkennung von Feiertagen  | integer  | 0            | Skript zur Erkennung von Feiertagen (behandeln wie Sonntage) [^2] |
+| Erkennung von Feiertagen  | integer  | 0            | Skript zur Erkennung von Feiertagen (behandeln wie Sonntage) _[2]_ |
 |                           |          |              | |
-|                           | string   |              | Schaltzeiten unverzüglich nach Änderungen neu ermitteln |
-|                           | string   |              | Uhrzeit für die zyklische Ermittlung der Schaltzeiten |
+| sofort neu ermitteln      | boolean  | true         | Schaltzeiten unverzüglich nach Änderungen neu ermitteln _[3]_ |
+|                           | string   | 00:00:00     | Uhrzeit für die zyklische Ermittlung der Schaltzeiten |
 |                           |          |              | |
 
-[^1]: der Wochenplan muss den Bereich _Ruhephase_ mit der ID 0 enthalten sowie für jeden Bereich eine Aktion mit der ID ab 1 (entsprechend der Position in der Tabelle).<br>
+_[1]_: der Wochenplan muss den Bereich _Ruhephase_ mit der ID 0 enthalten sowie für jeden Bereich eine Aktion mit der ID ab 1 (entsprechend der Position in der Tabelle).<br>
 Im Plan wird dann für jede Aktion der Bereich definiert, innerhalb dess eine gültige Schlatzeit liegen darf; werden die Grenzen verletzt wird der jew. Grenzwert (als die Anfangs- bzw Endezeit) verwendet. Die anderen Zeiten sind komplett durch die _Ruhephase_ gefüllt.
-[^2]: Beispiel-Script siehe [docs/retrieve_holidays.php](docs/retrieve_holidays.php).
+
+_[2]_: Beispiel-Script siehe [docs/retrieve_holidays.php](docs/retrieve_holidays.php)<br>
+Übergeben wird als _TSTAMP_ der zu prpfenden Zeitpunkt, der Rückgabewert ist im positiven Fall entweder _"true"_ oder _true_ oder der Name des Feiertags, andernfalls "false" oder _false_ oder ein Leerstring.
+
+_[3]_: ist der Schalter aktiv, werden die Schaltzeiten neu ermitteln, sobald sich ein Referenzwert ändert oder den Wochenplan angepasst wird.<br>
+Dabei gibt es noch eine Besonderheit: in manchen Module werden nur Uhrzeiten verwendet, nicht ein Zeitstempel; das kann u.U. zu dopelter Auslösung führen.
+Z.b. Astro-basierten Zeiten können sich so ändern, das bei Auslösen des ersten Zeitpunkts der nächste Zeitpunkt nicht nur gemäß Zeitstempeln sondern auch
+nach Uhrzeit in der Zukuft liegt (im Herbst ist der Sonnenaufgang jeden Tag um bis zu 2 min später - damit könnte der Schaltvorgang zwei mal stattfinden,
+wenn nur die Uhrzeit betrachtet wird). Daher wird die Variable-Veränderung solange verzögert, bis die Uhrzeit in der Vergangenheit liegt.
+Zusätzlich bzw wenn der Schalter inaktiv ist, wird die Neuermittlung der Schaltzeitpunkte zu der angegebenen Uhrzeit durchgeführt.
 
 #### Aktionen
 
@@ -93,11 +102,7 @@ Im Plan wird dann für jede Aktion der Bereich definiert, innerhalb dess eine g�
 
 ### Variablenprofile
 
-Es werden folgende Variablenprofile angelegt:
-* Boolean<br>
-* Integer<br>
-* Float<br>
-* String<br>
+Es werden keine Variablenprofile angelegt.
 
 ## 6. Anhang
 
