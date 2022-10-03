@@ -16,16 +16,19 @@
 			"Disable instance": "Instanz deaktivieren",
 
 			"Switchtime range definitions": "Schaltzeit-Bereich-Definitionen",
-			"Name of switchtime": "Name der Schaltzeit",
+			"Name of the switchtime range": "Bezeichnung des Schaltzeit-Bereichs",
 			"Reference variable": "Referenz-Variable",
 			"Time offset": "Zeitversatz",
 			" Seconds": " Sekunden",
 
 			"Weekplan event": "Wochenplan-Ereignis",
 
-			"Additional random time offset": "Zusätzlicher zufälliger Zeitversatz",
+			"Maximum additional random time offset": "Maximaler zusätzlicher zufälliger Zeitversatz",
 
 			"Script for recognizing holidays (treat like Sundays)": "Skript zur Erkennung von Feiertagen (behandeln wie Sonntage)",
+
+			"Redetermine switchtimes immediately after changes": "Schaltzeiten unverzüglich nach Änderungen neu ermitteln",
+			"Time for the cyclic determination of the switchtimes": "Uhrzeit für die zyklische Ermittlung der Schaltzeiten",
 
 			"__actions__": "",
 			"Check conditions": "Bedingungen prüfen",
