@@ -33,6 +33,8 @@ class SwitchtimeDetermination extends IPSModule
 
         $this->RegisterPropertyInteger('eventID', 0);
 
+        $this->RegisterPropertyString('action_script', '');
+
         $this->RegisterPropertyInteger('holiday_scriptID', 0);
 
         $this->RegisterPropertyString('update_time', '{"hour":0,"minute":0,"second":0}');
@@ -43,6 +45,7 @@ class SwitchtimeDetermination extends IPSModule
         $this->InstallVarProfiles(false);
 
         $this->RegisterTimer('CheckConditions', 0, 'IPS_RequestAction(' . $this->InstanceID . ', "CheckConditions", "");');
+        $this->RegisterTimer('ExecuteAction', 0, 'IPS_RequestAction(' . $this->InstanceID . ', "ExecuteAction", "");');
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
@@ -91,19 +94,16 @@ class SwitchtimeDetermination extends IPSModule
                     continue;
                 }
                 $varID = $time_def['varID'];
-                if (IPS_VariableExists($varID) == false) {
-                    $this->SendDebug(__FUNCTION__, '"varID" for range ' . $actionID . ' must be defined', 0);
-                    $r[] = $this->TranslateFormat('Reference variable for "{$name}" must be defined', ['{$actionID}' => $actionID, '{$name}' => $name]);
-                    continue;
-                }
-                $var = IPS_GetVariable($varID);
-                $varprof = $var['VariableCustomProfile'];
-                if ($varprof == false) {
-                    $varprof = $var['VariableProfile'];
-                }
-                if (preg_match('/^~UnixTimestamp/', $varprof) == false) {
-                    $this->SendDebug(__FUNCTION__, '"varID" for range ' . $actionID . ' must have variable profile "~UnixTimestamp"', 0);
-                    $r[] = $this->Translate('Reference variable for "{$name}" must have variable profile "~UnixTimestamp"', ['{$actionID}' => $actionID, '{$name}' => $name]);
+                if (IPS_VariableExists($varID)) {
+                    $var = IPS_GetVariable($varID);
+                    $varprof = $var['VariableCustomProfile'];
+                    if ($varprof == false) {
+                        $varprof = $var['VariableProfile'];
+                    }
+                    if (preg_match('/^~UnixTimestamp/', $varprof) == false) {
+                        $this->SendDebug(__FUNCTION__, '"varID" for range ' . $actionID . ' must have variable profile "~UnixTimestamp"', 0);
+                        $r[] = $this->Translate('Reference variable for "{$name}" must have variable profile "~UnixTimestamp"', ['{$actionID}' => $actionID, '{$name}' => $name]);
+                    }
                 }
             }
         }
@@ -120,6 +120,12 @@ class SwitchtimeDetermination extends IPSModule
             'holiday_scriptID',
         ];
         $this->MaintainReferences($propertyNames);
+
+        $propertyNames = ['action_script'];
+        foreach ($propertyNames as $name) {
+            $text = $this->ReadPropertyString($name);
+            $this->MaintainReferences4Script($text);
+        }
 
         $time_definitions = json_decode($this->ReadPropertyString('time_definitions'), true);
         foreach ($time_definitions as $time_def) {
@@ -138,18 +144,21 @@ class SwitchtimeDetermination extends IPSModule
 
         if ($this->CheckPrerequisites() != false) {
             $this->MaintainTimer('CheckConditions', 0);
+            $this->MaintainTimer('ExecuteAction', 0);
             $this->MaintainStatus(self::$IS_INVALIDPREREQUISITES);
             return;
         }
 
         if ($this->CheckUpdate() != false) {
             $this->MaintainTimer('CheckConditions', 0);
+            $this->MaintainTimer('ExecuteAction', 0);
             $this->MaintainStatus(self::$IS_UPDATEUNCOMPLETED);
             return;
         }
 
         if ($this->CheckConfiguration() != false) {
             $this->MaintainTimer('CheckConditions', 0);
+            $this->MaintainTimer('ExecuteAction', 0);
             $this->MaintainStatus(self::$IS_INVALIDCONFIG);
             return;
         }
@@ -179,6 +188,7 @@ class SwitchtimeDetermination extends IPSModule
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
             $this->MaintainTimer('CheckConditions', 0);
+            $this->MaintainTimer('ExecuteAction', 0);
             $this->MaintainStatus(IS_INACTIVE);
             return;
         }
@@ -220,37 +230,37 @@ class SwitchtimeDetermination extends IPSModule
         ];
 
         $formElements[] = [
-            'name'        => 'time_definitions',
-            'type'        => 'List',
-            'rowCount'    => 3,
-            'add'         => true,
-            'delete'      => true,
-            'columns'     => [
+            'name'     => 'time_definitions',
+            'type'     => 'List',
+            'rowCount' => 3,
+            'add'      => true,
+            'delete'   => true,
+            'columns'  => [
                 [
-                    'name'               => 'name',
-                    'add'                => '',
-                    'edit'               => [
-                        'type'               => 'ValidationTextBox',
+                    'name'    => 'name',
+                    'add'     => '',
+                    'edit'    => [
+                        'type' => 'ValidationTextBox',
                     ],
-                    'width'              => 'auto',
-                    'caption'            => 'Name of the switchtime range',
+                    'width'   => 'auto',
+                    'caption' => 'Name of the switchtime range',
                 ],
                 [
-                    'name'               => 'varID',
-                    'add'                => 0,
-                    'edit'               => [
+                    'name'    => 'varID',
+                    'add'     => 0,
+                    'edit'    => [
                         'type'               => 'SelectVariable',
                         'validVariableTypes' => [VARIABLETYPE_INTEGER],
                     ],
-                    'width'              => '500px',
-                    'caption'            => 'Reference variable',
+                    'width'   => '500px',
+                    'caption' => 'Reference variable',
                 ],
                 [
                     'name'    => 'offset',
                     'add'     => 0,
                     'edit'    => [
-                        'type'    => 'NumberSpinner',
-                        'suffix'  => ' Seconds',
+                        'type'   => 'NumberSpinner',
+                        'suffix' => ' Seconds',
                     ],
                     'width'   => '250px',
                     'caption' => 'Time offset',
@@ -268,28 +278,41 @@ class SwitchtimeDetermination extends IPSModule
         ];
 
         $formElements[] = [
-            'name'               => 'eventID',
-            'type'               => 'SelectEvent',
-            'width'              => '500px',
-            'caption'            => 'Weekplan event',
+            'name'    => 'eventID',
+            'type'    => 'SelectEvent',
+            'width'   => '500px',
+            'caption' => 'Weekplan event',
         ];
 
         $formElements[] = [
-            'name'               => 'holiday_scriptID',
-            'type'               => 'SelectScript',
-            'width'              => '500px',
-            'caption'            => 'Script for recognizing holidays (treat like Sundays)',
+            'name'    => 'holiday_scriptID',
+            'type'    => 'SelectScript',
+            'width'   => '500px',
+            'caption' => 'Script for recognizing holidays (treat like Sundays)',
         ];
 
         $formElements[] = [
-            'name'               => 'update_time',
-            'type'               => 'SelectTime',
-            'caption'            => 'Time for the cyclic determination of the switchtimes',
+            'name'    => 'update_time',
+            'type'    => 'SelectTime',
+            'caption' => 'Time for the cyclic determination of the switchtimes',
         ];
         $formElements[] = [
-            'name'               => 'update_promptly',
-            'type'               => 'CheckBox',
-            'caption'            => 'Redetermine switchtimes immediately after changes',
+            'name'    => 'update_promptly',
+            'type'    => 'CheckBox',
+            'caption' => 'Redetermine switchtimes immediately after changes',
+        ];
+
+        $formElements[] = [
+            'type'     => 'ExpansionPanel',
+            'expanded' => false,
+            'items'    => [
+                [
+                    'name'     => 'action_script',
+                    'type'     => 'ScriptEditor',
+                    'rowCount' => 10,
+                ],
+            ],
+            'caption'  => 'PHP code to be executed at switchtime',
         ];
 
         return $formElements;
@@ -339,6 +362,9 @@ class SwitchtimeDetermination extends IPSModule
             case 'CheckConditions':
                 $this->CheckConditions();
                 break;
+            case 'ExecuteAction':
+                $this->ExecuteAction();
+                break;
             default:
                 $r = false;
                 break;
@@ -383,11 +409,15 @@ class SwitchtimeDetermination extends IPSModule
         $random = $this->ReadPropertyInteger('random');
         $update_promptly = $this->ReadPropertyBoolean('update_promptly');
 
-        $now = time();
-        $this->SendDebug(__FUNCTION__, 'now=' . date('d.m.Y H:i:s', $now), 0);
-        $now_date = $this->GetTstampOfMidnight($now);
+        $now_tstamp = time();
+        $this->SendDebug(__FUNCTION__, 'now_tstamp=' . date('d.m.Y H:i:s', $now_tstamp), 0);
+        $now_date = $this->GetTstampOfMidnight($now_tstamp);
+        $now_sec = $this->GetSecFromMidnight(date('H:i:s', $now_tstamp));
 
-        $sec2sleep = 0;
+        $sleep4check = 0;
+        $sleep4action = 0;
+
+        $action_script = $this->ReadPropertyString('action_script');
 
         $time_definitions = json_decode($this->ReadPropertyString('time_definitions'), true);
         for ($actionID = 1; $actionID <= count($time_definitions); $actionID++) {
@@ -395,17 +425,29 @@ class SwitchtimeDetermination extends IPSModule
 
             $ident = self::$ident_pfx . $actionID;
             $old_tstamp = $this->GetValue($ident);
+            $old_sec = $this->GetSecFromMidnight(date('H:i:s', $old_tstamp));
 
             $this->SendDebug(__FUNCTION__, 'name=' . $time_def['name'] . ', actionID=' . $actionID . ', old_tstamp=' . date('d.m.Y H:i:s', $old_tstamp), 0);
 
             $varID = $time_def['varID'];
-            $var_tstamp = GetValueInteger($varID);
-            $this->SendDebug(__FUNCTION__, '... varID=' . $varID . ', var_tstamp=' . date('d.m.Y H:i:s', $var_tstamp), 0);
+            if (IPS_VariableExists($varID)) {
+                $var_tstamp = GetValueInteger($varID);
+                $this->SendDebug(__FUNCTION__, '... varID=' . $varID . ', var_tstamp=' . date('d.m.Y H:i:s', $var_tstamp), 0);
 
-            $new_tstamp = $var_tstamp + (int) $time_def['offset'];
-            if ($random > 0) {
-                $new_tstamp += rand(0, $random);
+                $new_tstamp = $var_tstamp + (int) $time_def['offset'];
+                if ($random > 0) {
+                    $new_tstamp += rand(0, $random);
+                }
+            } else {
+                $new_tstamp = $now_date;
+                if ($old_tstamp < $now_tstamp) {
+                    $new_tstamp += 86400;
+                }
+                if ($random > 0) {
+                    $new_tstamp += rand(0, $random);
+                }
             }
+
             $new_sec = $this->GetSecFromMidnight(date('H:i:s', $new_tstamp));
             $wday = (int) date('N', $new_tstamp) - 1;
 
@@ -417,7 +459,7 @@ class SwitchtimeDetermination extends IPSModule
                     'TSTAMP' => $new_tstamp,
                 ];
                 @$s = IPS_RunScriptWaitEx($holiday_scriptID, $params);
-                $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $holiday_scriptID . ', ' . print_r($params, true) . ')=' . $s, 0);
+                $this->SendDebug(__FUNCTION__, '... IPS_RunScriptWaitEx(' . $holiday_scriptID . ', ' . print_r($params, true) . ')=' . $s, 0);
                 $isHoliday = filter_var($s, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
                 if (is_null($isHoliday)) {
                     $isHoliday = $s != '';
@@ -432,6 +474,7 @@ class SwitchtimeDetermination extends IPSModule
             if (IPS_EventExists($eventID)) {
                 $start = '';
                 $end = '';
+
                 $event = IPS_GetEvent($eventID);
                 if ($event['EventActive']) {
                     foreach ($event['ScheduleGroups'] as $group) {
@@ -452,7 +495,8 @@ class SwitchtimeDetermination extends IPSModule
                         }
                     }
                 }
-                $this->SendDebug(__FUNCTION__, '... found range=' . $start . ' - ' . $end, 0);
+                $this->SendDebug(__FUNCTION__, '... found range: start=' . $start . ', end=' . $end, 0);
+
                 if ($start != '') {
                     $start_sec = $this->GetSecFromMidnight($start);
                     if ($new_sec < $start_sec) {
@@ -471,35 +515,100 @@ class SwitchtimeDetermination extends IPSModule
                 }
             }
 
-			$delayed = false;
-			if ($update_promptly) {
-				$now_sec = $this->GetSecFromMidnight(date('H:i:s', $now));
-				if ($new_sec > $now_sec) {
-					$dif = $now_date + $new_sec - $now;
-					if ($sec2sleep == 0 || $sec2sleep > $dif) {
-						$sec2sleep = $dif;
-					}
-					$delayed = true;
-					$this->SendDebug(__FUNCTION__, '... change ' . $dif . 's delayed', 0);
-				}
-			}
+            if ($action_script != '' && $new_tstamp > $now_tstamp) {
+                $dif = $new_tstamp - $now_tstamp;
+                if ($sleep4action == 0 || $sleep4action > $dif) {
+                    $sleep4action = $dif;
+                }
+                $this->SendDebug(__FUNCTION__, '... execute in ' . $dif . 's', 0);
+            }
 
-            if ($delayed == false && $new_tstamp != $old_tstamp) {
-                $this->SendDebug(__FUNCTION__, '... set ident=' . $ident . ' to ' . $new_tstamp . '/' . date('d.m.Y H:i:s', $new_tstamp), 0);
+            if ($new_tstamp == $old_tstamp) {
+                $this->SendDebug(__FUNCTION__, '... ident=' . $ident . ' remains unchanged at ' . date('d.m.Y H:i:s', $new_tstamp), 0);
+                continue;
+            }
+
+            $delayed = false;
+            if ($update_promptly) {
+                $old_date = $this->GetTstampOfMidnight($old_tstamp);
+                $new_date = $this->GetTstampOfMidnight($new_tstamp);
+                $was_today = $old_date == $now_date && $old_sec <= $now_sec;
+                $will_today = $new_date == $now_date && $new_sec > $now_sec;
+                if ($new_sec > $now_sec && $was_today && $will_today) {
+                    $dif = $now_date + $new_sec - $now_tstamp;
+                    if ($sleep4check == 0 || $sleep4check > $dif) {
+                        $sleep4check = $dif;
+                    }
+                    $delayed = true;
+                    $this->SendDebug(__FUNCTION__, '... change ' . $dif . 's delayed', 0);
+                }
+            }
+
+            if ($delayed == false) {
+                if ($new_tstamp == time()) {
+                    $new_tstamp += 1; // damit der neuen Wert auf jeden Fall in der Zukunft liegt
+                }
+                $this->SendDebug(__FUNCTION__, '... ident=' . $ident . ' changes to ' . date('d.m.Y H:i:s', $new_tstamp), 0);
                 $this->SetValue($ident, $new_tstamp);
             }
         }
 
         $update_time = json_decode($this->ReadPropertyString('update_time'), true);
-        $next = $now_date + $update_time['hour'] * 3600 + $update_time['minute'] * 60 + $update_time['second'];
-        if ($next < $now) {
-            $next += 86400;
+        $next_tstamp = $now_date + $update_time['hour'] * 3600 + $update_time['minute'] * 60 + $update_time['second'];
+        if ($next_tstamp < $now_tstamp) {
+            $next_tstamp += 86400;
         }
-        $dif = $next - $now;
-        if ($sec2sleep == 0 || $sec2sleep > $dif) {
-            $sec2sleep = $dif;
+        $dif = $next_tstamp - $now_tstamp;
+        if ($sleep4check == 0 || $sleep4check > $dif) {
+            $sleep4check = $dif;
         }
-        $this->MaintainTimer('CheckConditions', $sec2sleep * 1000);
+        $this->MaintainTimer('CheckConditions', $sleep4check * 1000);
+
+        $this->MaintainTimer('ExecuteAction', $sleep4action * 1000);
+    }
+
+    private function ExecuteAction()
+    {
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            return;
+        }
+
+        $now_tstamp = time();
+
+        $sleep4action = 0;
+
+        $action_script = $this->ReadPropertyString('action_script');
+        if ($action_script != '') {
+            $time_definitions = json_decode($this->ReadPropertyString('time_definitions'), true);
+            for ($actionID = 1; $actionID <= count($time_definitions); $actionID++) {
+                $time_def = $time_definitions[$actionID - 1];
+
+                $ident = self::$ident_pfx . $actionID;
+                $cur_tstamp = $this->GetValue($ident);
+
+                $this->SendDebug(__FUNCTION__, 'name=' . $time_def['name'] . ', actionID=' . $actionID . ', old_tstamp=' . date('d.m.Y H:i:s', $cur_tstamp), 0);
+
+                if ($cur_tstamp == $now_tstamp) {
+                    $params = [
+                        'actionID'   => $actionID,
+                        'instanceID' => $this->InstanceID,
+                    ];
+                    @$r = IPS_RunScriptTextWaitEx($action_script, $params);
+                    $this->SendDebug(__FUNCTION__, '... execute script("...", ' . print_r($params, true) . ' => ' . $r, 0);
+                }
+
+                if ($cur_tstamp > $now_tstamp) {
+                    $dif = $cur_tstamp - $now_tstamp;
+                    if ($sleep4action == 0 || $sleep4action > $dif) {
+                        $sleep4action = $dif;
+                    }
+                    $this->SendDebug(__FUNCTION__, '... execute in ' . $dif . 's', 0);
+                }
+            }
+        }
+
+        $this->MaintainTimer('ExecuteAction', $sleep4action * 1000);
     }
 
     private function GetSecFromMidnight($str)

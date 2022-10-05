@@ -9,8 +9,8 @@
 
 			"At least one range must be defined": "Mindestens ein Bereich muss definiert sein",
 			"Name for range {$action} must be defined": "Name für Bereich {$action} muss definiert sein",
-			"Reference variable for \"{$name}\" must be defined": "Referenzvariable für \"{$name}\" muss definiert sein",
-			"Reference variable for \"{$name}\" must have variable profile \"~UnixTimestamp\"": "Referenzvariable für \"{$name}\" muss Variablenprofil \"~UnixTimestamp\" haben",
+			"Reference variable for \"{$name}\" must have variable profile \"~UnixTimestamp\"":
+				"Referenzvariable für \"{$name}\" muss Variablenprofil \"~UnixTimestamp\" haben",
 
 			"__properties__": "",
 			"Disable instance": "Instanz deaktivieren",
@@ -26,6 +26,8 @@
 			"Maximum additional random time offset": "Maximaler zusätzlicher zufälliger Zeitversatz",
 
 			"Script for recognizing holidays (treat like Sundays)": "Skript zur Erkennung von Feiertagen (behandeln wie Sonntage)",
+
+			"PHP code to be executed at switchtime": "PHP-Code, der zum Schaltzeitpunkt ausgeführt werden soll",
 
 			"Redetermine switchtimes immediately after changes": "Schaltzeiten unverzüglich nach Änderungen neu ermitteln",
 			"Time for the cyclic determination of the switchtimes": "Uhrzeit für die zyklische Ermittlung der Schaltzeiten",

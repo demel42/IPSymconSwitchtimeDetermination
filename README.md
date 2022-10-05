@@ -22,7 +22,7 @@ Die Verwendung von festen Zeit in Ereignissen gibt es unter Umständen ein paar 
 (weil Sonnenaufgang schon um kurz nach 5 Uhr ist), also vo dem Aufstehen.<br>
 - keine Berücksichtigung von Wochenende und Feiertagen
 
-Daher bietet das Modul die Möglichkeit, das etwas einzuhegen:<br>
+Daher bietet das Modul die Möglichkeit, das etwas besser zu konfigurieren:<br>
 - beliebig viele Schaltzeitpunkte pro Tag<br>
 - Angabe der zulässigen Grenzen der Schaltzeiten pro Schaltzeitpunkt<br>
 - zu jedem Schaltzeitpunkt wird eine Referenzvariable angegeben (z.B. die Variablen aus der _Location_-Instanz)<br>
@@ -67,28 +67,31 @@ Es gibt keine Funktionen des Moduls.
 |                           |          |              | |
 | Bereich-Definition        | array    |              | Defintion der Schaltzeit-Bereiche |
 | ... Name                  | string   |              | Bezeichnung des Schaltzeit-Bereichs |
-| ... Referenz-Variable     | integer  | 0            | Variable vom Typ ~UnixTimestamp |
+| ... Referenz-Variable     | integer  | 0            | Variable vom Typ ~UnixTimestamp _[1]_ |
 | ... Zeitversatz           | integer  | 0            | Zeitversatz in Sekunden |
 |                           |          |              | |
-| Wochenplan-Ereignis       | integer  | 0            | Wochenplan _[1]_ |
+| Wochenplan-Ereignis       | integer  | 0            | Wochenplan _[2]_ |
 |                           |          |              | |
 | zufälliger Zeitversatz    | integer  | 0            | Maximaler zusätzlicher zufälliger Zeitversatz in Sekunden, der zu der ermittelten Zeit hinzugefügt wird. |
 |                           |          |              | |
-| Erkennung von Feiertagen  | integer  | 0            | Skript zur Erkennung von Feiertagen (behandeln wie Sonntage) _[2]_ |
+| Erkennung von Feiertagen  | integer  | 0            | Skript zur Erkennung von Feiertagen (behandeln wie Sonntage) _[3]_ |
 |                           |          |              | |
-| sofort neu ermitteln      | boolean  | true         | Schaltzeiten unverzüglich nach Änderungen neu ermitteln _[3]_ |
+| sofort neu ermitteln      | boolean  | true         | Schaltzeiten unverzüglich nach Änderungen neu ermitteln _[4]_ |
 |                           | string   | 00:00:00     | Uhrzeit für die zyklische Ermittlung der Schaltzeiten |
 |                           |          |              | |
 
-_[1]_: der Wochenplan muss den Bereich _Ruhephase_ mit der ID 0 enthalten sowie für jeden Bereich eine Aktion mit der ID ab 1 (entsprechend der Position in der Tabelle).<br>
+_[1]_: wird keine Referenzvariable angegeben, wird damit automatisch der Startpunkt der enstrepchenden Aktion aus dem WOchenplan genommen - damit
+handelt es sich dann also eine feste Uhrzeit-Angabe.
+
+_[2]_: der Wochenplan muss den Bereich _Ruhephase_ mit der ID 0 enthalten sowie für jeden Bereich eine Aktion mit der ID ab 1 (entsprechend der Position in der Tabelle).<br>
 Im Plan wird dann für jede Aktion der Bereich definiert, innerhalb dess eine gültige Schlatzeit liegen darf; werden die Grenzen verletzt wird der jeweilige
 Grenzwert (als die Anfangs- bzw Endezeit) verwendet. Die anderen Zeiten sind komplett durch die _Ruhephase_ gefüllt.
 
-_[2]_: Beispiel-Script siehe [docs/retrieve_holidays.php](docs/retrieve_holidays.php)<br>
+_[3]_: Beispiel-Script siehe [docs/retrieve_holidays.php](docs/retrieve_holidays.php)<br>
 Übergeben wird als _TSTAMP_ der zu prüfenden Zeitpunkt; der Rückgabewert ist im positiven Fall entweder _"true"_, _true_ oder der Name des Feiertags, andernfalls
 "false", _false_ oder ein Leerstring.
 
-_[3]_: ist der Schalter aktiv, werden die Schaltzeiten neu ermitteln, sobald sich ein Referenzwert ändert oder den Wochenplan angepasst wird.<br>
+_[4]_: ist der Schalter aktiv, werden die Schaltzeiten neu ermitteln, sobald sich ein Referenzwert ändert oder den Wochenplan angepasst wird.<br>
 Dabei gibt es noch eine Besonderheit: in manchen Module werden nur Uhrzeiten verwendet, nicht ein Zeitstempel; das kann u.U. zu dopelter Auslösung führen.
 Z.b. Astro-basierten Zeiten können sich so ändern, das bei Auslösen des ersten Zeitpunkts der nächste Zeitpunkt nicht nur gemäß Zeitstempeln sondern auch
 nach Uhrzeit in der Zukuft liegt (im Herbst ist der Sonnenaufgang jeden Tag um bis zu 2 min später - damit könnte, wenn nur die Uhrzeit betrachtet wird, der Schaltvorgang am gleichen
@@ -119,5 +122,5 @@ Es werden keine Variablenprofile angelegt.
 
 ## 7. Versions-Historie
 
-- 1.0 @ 03.10.2022 15:11
+- 1.0 @ 05.10.2022 13:27
   - Initiale Version
