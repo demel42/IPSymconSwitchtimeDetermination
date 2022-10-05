@@ -79,6 +79,7 @@ Es gibt keine Funktionen des Moduls.
 | sofort neu ermitteln      | boolean  | true         | Schaltzeiten unverzüglich nach Änderungen neu ermitteln _[4]_ |
 |                           | string   | 00:00:00     | Uhrzeit für die zyklische Ermittlung der Schaltzeiten |
 |                           |          |              | |
+| PHP-Script                | string   |              | optionaler PHP-Code, der zum Schaltzeitpunkt ausgeführt wird _[5]_ |
 
 _[1]_: wird keine Referenzvariable angegeben, wird damit automatisch der Startpunkt der enstrepchenden Aktion aus dem WOchenplan genommen - damit
 handelt es sich dann also eine feste Uhrzeit-Angabe.
@@ -98,6 +99,8 @@ nach Uhrzeit in der Zukuft liegt (im Herbst ist der Sonnenaufgang jeden Tag um b
 Tage zweifach stattfinden).
 Daher wird die Variable-Veränderung solange verzögert, bis die Uhrzeit in der Vergangenheit liegt.
 Zusätzlich bzw wenn der Schalter inaktiv ist, wird die Neuermittlung der Schaltzeitpunkte zu der angegebenen Uhrzeit durchgeführt.
+
+_[5]_: der Code wird zum Schaltzeitpunkt ausgeführt, den jeweils ausgelösten Schaltzeitpunkt kann man der Variable *_IPS['actionID']* entnehmen.
 
 #### Aktionen
 
