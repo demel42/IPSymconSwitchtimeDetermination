@@ -106,7 +106,7 @@ _[5]_: der Code wird zum Schaltzeitpunkt ausgeführt, den jeweils ausgelösten S
 
 _[6]_: hiermit kann für jede Zeitstempel-Variable eine Zusatz-Variable erzeugt werden, die den Zeitstempel formatiert enthält,
 unterstützte Formate siehe [hier](https://www.php.net/manual/de/datetime.format.php).
-Beispiel: mit der Formatangabe von `H:i` wird die Uhrzeit des zeitstempels als "hh:mm" in einer zusätzliche Variable von Typ String abgelegt.
+Beispiel: mit der Formatangabe `H:i` wird die Uhrzeit des Zeitstempels als _hh:mm_ in einer zusätzlichen String-Variable abgelegt.
 
 #### Aktionen
 
