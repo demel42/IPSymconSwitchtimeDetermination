@@ -104,7 +104,8 @@ Zusätzlich bzw wenn der Schalter inaktiv ist, wird die Neuermittlung der Schalt
 
 _[5]_: der Code wird zum Schaltzeitpunkt ausgeführt, den jeweils ausgelösten Schaltzeitpunkt kann man der Variable *_IPS['actionID']* entnehmen.
 
-_[6]_: hiermit kann für jede Zeitstempel-Variable eine Zusatz-Variable erzeugt werden, die den Zeitstempel formatiert enthält, Formate siehe [hier](https://www.php.net/manual/de/datetime.format.php).
+_[6]_: hiermit kann für jede Zeitstempel-Variable eine Zusatz-Variable erzeugt werden, die den Zeitstempel formatiert enthält, Formate siehe [hier](https://www.php.net/manual/de/datetime.format.php).<br>
+Beispiel: mit `H:i` wird die Uhrzeit als "hh:mm" abgelegt.
 
 #### Aktionen
 
