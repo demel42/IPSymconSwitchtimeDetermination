@@ -131,7 +131,7 @@ Es werden keine Variablenprofile angelegt.
 
 - 1.1 @ 06.10.2022 14:38
   - Auswertung de Schalters "Ereignis aktiv" im Wochenplan - ist dieser nicht gesetzt, werden die Zeitstempel gelöscht etc
-  - optionale Angabe eines Formates für die Ausgabe in einer zusätzlichen Strimgvariable pro Zeitstempel
+  - optionale Angabe eines Formates für die Ausgabe in einer zusätzlichen Stringvariable pro Zeitstempel
 
 - 1.0 @ 05.10.2022 13:27
   - Initiale Version
