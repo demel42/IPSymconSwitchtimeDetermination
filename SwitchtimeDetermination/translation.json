@@ -27,10 +27,16 @@
 
 			"Script for recognizing holidays (treat like Sundays)": "Skript zur Erkennung von Feiertagen (behandeln wie Sonntage)",
 
+			"Format for string representation of timestamp": "Format für die String-Darstellung des Zeitstempels",
+			"(see https://www.php.net/manual/de/datetime.format.php)": "(siehe https://www.php.net/manual/de/datetime.format.php)",
+
 			"PHP code to be executed at switchtime": "PHP-Code, der zum Schaltzeitpunkt ausgeführt werden soll",
 
 			"Redetermine switchtimes immediately after changes": "Schaltzeiten unverzüglich nach Änderungen neu ermitteln",
 			"Time for the cyclic determination of the switchtimes": "Uhrzeit für die zyklische Ermittlung der Schaltzeiten",
+
+			"__variables__": "",
+			" (formatted)": " (formatiert)",
 
 			"__actions__": "",
 			"Check conditions": "Bedingungen prüfen",
