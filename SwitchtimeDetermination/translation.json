@@ -27,8 +27,10 @@
 
 			"Script for recognizing holidays (treat like Sundays)": "Skript zur Erkennung von Feiertagen (behandeln wie Sonntage)",
 
-			"Format for string representation of timestamp": "Format für die String-Darstellung des Zeitstempels",
-			"(see https://www.php.net/manual/de/datetime.format.php)": "(siehe https://www.php.net/manual/de/datetime.format.php)",
+			"Additional variables": "Zusätzliche Variablen",
+			"Presentation format": "Darstellungs-Format",
+			"Format for the additional representation of the timestamp as string, see https://www.php.net/manual/de/datetime.format.php":
+				"Format für die zusätzliche Darstellung des Zeitstempels als String, siehe https://www.php.net/manual/de/datetime.format.php",
 
 			"PHP code to be executed at switchtime": "PHP-Code, der zum Schaltzeitpunkt ausgeführt werden soll",
 

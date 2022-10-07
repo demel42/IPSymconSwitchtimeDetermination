@@ -40,9 +40,9 @@ Daher bietet das Modul die Möglichkeit, das etwas besser zu konfigurieren:<br>
 ### a. Installation des Moduls
 
 Im [Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff
-*Schaltzeit ermitteln* zu finden.<br>
+*Schaltzeiten ermitteln* zu finden.<br>
 Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL
-`https://github.com/demel42/SwitchtimeDetermination.git` installiert werden.
+`https://github.com/demel42/IPSymconSwitchtimeDetermination.git` installiert werden.
 
 ### b. Einrichtung in IPS
 
@@ -130,6 +130,10 @@ Es werden keine Variablenprofile angelegt.
 ### Quellen
 
 ## 7. Versions-Historie
+
+- 1.1.1 @ 07.10.2022 08:59
+  - Schreibfehler im README.md korrigiert
+  - Instanzseite etwas überarbeitet
 
 - 1.1 @ 06.10.2022 14:38
   - Auswertung de Schalters "Ereignis aktiv" im Wochenplan - ist dieser nicht gesetzt, werden die Zeitstempel gelöscht etc

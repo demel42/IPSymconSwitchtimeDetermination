@@ -318,18 +318,20 @@ class SwitchtimeDetermination extends IPSModule
         ];
 
         $formElements[] = [
-            'type'    => 'RowLayout',
-            'items'   => [
+            'type'     => 'ExpansionPanel',
+            'expanded' => false,
+            'items'    => [
+                [
+                    'type'    => 'Label',
+                    'caption' => 'Format for the additional representation of the timestamp as string, see https://www.php.net/manual/de/datetime.format.php',
+                ],
                 [
                     'name'    => 'date_format',
                     'type'    => 'ValidationTextBox',
-                    'caption' => 'Format for string representation of timestamp',
-                ],
-                [
-                    'type'    => 'Label',
-                    'caption' => '(see https://www.php.net/manual/de/datetime.format.php)',
+                    'caption' => 'Presentation format',
                 ],
             ],
+            'caption' => 'Additional variables',
         ];
 
         $formElements[] = [
