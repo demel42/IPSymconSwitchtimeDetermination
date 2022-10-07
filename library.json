@@ -2,11 +2,11 @@
 	"id": "{0C1859DD-4610-4990-D3D9-6A6F058F4102}",
 	"name": "SwitchtimeDetermination",
 	"author": "Ch. Damsky",
-	"url": "https://github.com/demel42/ModuleTenmplate.git",
+	"url": "https://github.com/demel42/IPSymconSwitchtimeDetermination.git",
 	"compatibility": {
 		"version": "6.0"
 	},
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"build": 0,
-	"date": 1665125965
+	"date": 1665126951
 }

@@ -131,6 +131,9 @@ Es werden keine Variablenprofile angelegt.
 
 ## 7. Versions-Historie
 
+- 1.1.2 @ 07.10.2022 09:15
+  - Fehler in library.json und modul.json
+
 - 1.1.1 @ 07.10.2022 08:59
   - Schreibfehler im README.md korrigiert
   - Instanzseite etwas überarbeitet
