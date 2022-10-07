@@ -131,6 +131,11 @@ Es werden keine Variablenprofile angelegt.
 
 ## 7. Versions-Historie
 
+- 1.2 @ 07.10.2022 13:49
+  - Angabe der Zeiteinheit beim Zeitversatzt (zur bequemeren Benutzung)
+  - update submodule CommonStubs
+    Fix: Update-Prüfung wieder funktionsfähig
+
 - 1.1.2 @ 07.10.2022 09:15
   - Fehler in library.json und modul.json
 

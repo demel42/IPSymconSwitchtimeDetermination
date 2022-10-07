@@ -114,6 +114,43 @@ class SwitchtimeDetermination extends IPSModule
         return $r;
     }
 
+    private function CheckModuleUpdate(array $oldInfo, array $newInfo)
+    {
+        $this->SendDebug(__FUNCTION__, 'old=' . print_r($oldInfo, true) . ', new=' . print_r($newInfo, true), 0);
+        $r = [];
+
+        if ($this->version2num($oldInfo) < $this->version2num('1.2')) {
+            $r[] = $this->Translate('Add time unit and recalculate time offset');
+        }
+
+        return $r;
+    }
+
+    private function CompleteModuleUpdate(array $oldInfo, array $newInfo)
+    {
+        $this->SendDebug(__FUNCTION__, 'old=' . print_r($oldInfo, true) . ', new=' . print_r($newInfo, true), 0);
+        if ($this->version2num($oldInfo) < $this->version2num('1.2')) {
+            $time_definitions = json_decode($this->ReadPropertyString('time_definitions'), true);
+            for ($i = 0; $i < count($time_definitions); $i++) {
+                $offset = $time_definitions[$i]['offset'];
+                $unit = self::$TIMEUNIT_SECONDS;
+                if ($offset % 60 == 0) {
+                    $offset /= 60;
+                    $unit = self::$TIMEUNIT_MINUTES;
+                    if ($offset % 60 == 0) {
+                        $offset /= 60;
+                        $unit = self::$TIMEUNIT_HOURS;
+                    }
+                }
+                $time_definitions[$i]['offset'] = $offset;
+                $time_definitions[$i]['unit'] = $unit;
+            }
+            IPS_SetProperty($this->InstanceID, 'time_definitions', json_encode($time_definitions));
+        }
+
+        return '';
+    }
+
     public function ApplyChanges()
     {
         parent::ApplyChanges();
@@ -247,7 +284,7 @@ class SwitchtimeDetermination extends IPSModule
         $formElements[] = [
             'name'     => 'time_definitions',
             'type'     => 'List',
-            'rowCount' => 3,
+            'rowCount' => 4,
             'add'      => true,
             'delete'   => true,
             'columns'  => [
@@ -275,10 +312,20 @@ class SwitchtimeDetermination extends IPSModule
                     'add'     => 0,
                     'edit'    => [
                         'type'   => 'NumberSpinner',
-                        'suffix' => ' Seconds',
+                        // 'suffix' => ' Seconds',
                     ],
                     'width'   => '250px',
                     'caption' => 'Time offset',
+                ],
+                [
+                    'name'    => 'offset_timeunit',
+                    'add'     => self::$TIMEUNIT_MINUTES,
+                    'edit'    => [
+                        'type'    => 'Select',
+                        'options' => $this->GetTimeunitAsOptions(),
+                    ],
+                    'width'   => '200px',
+                    'caption' => 'Time unit',
                 ],
             ],
             'caption'  => 'Switchtime range definitions',
@@ -458,23 +505,29 @@ class SwitchtimeDetermination extends IPSModule
         $time_definitions = json_decode($this->ReadPropertyString('time_definitions'), true);
         for ($actionID = 1; $actionID <= count($time_definitions); $actionID++) {
             $time_def = $time_definitions[$actionID - 1];
+            $this->SendDebug(__FUNCTION__, 'time_def=' . print_r($time_def, true), 0);
 
+            $new_tstamp = 0;
             $delayed = false;
 
             $ident = self::$ident_raw_pfx . $actionID;
-            $new_tstamp = 0;
+            $old_tstamp = $this->GetValue($ident);
+            $old_sec = $this->GetSecFromMidnight(date('H:i:s', $old_tstamp));
+
+            $this->SendDebug(__FUNCTION__, 'name=' . $time_def['name'] . ', actionID=' . $actionID . ', old_tstamp=' . date('d.m.Y H:i:s', $old_tstamp), 0);
+
             if ($event['EventActive']) {
-                $old_tstamp = $this->GetValue($ident);
-                $old_sec = $this->GetSecFromMidnight(date('H:i:s', $old_tstamp));
-
-                $this->SendDebug(__FUNCTION__, 'name=' . $time_def['name'] . ', actionID=' . $actionID . ', old_tstamp=' . date('d.m.Y H:i:s', $old_tstamp), 0);
-
                 $varID = $time_def['varID'];
                 if (IPS_VariableExists($varID)) {
                     $var_tstamp = GetValueInteger($varID);
                     $this->SendDebug(__FUNCTION__, '... varID=' . $varID . ', var_tstamp=' . date('d.m.Y H:i:s', $var_tstamp), 0);
 
-                    $new_tstamp = $var_tstamp + (int) $time_def['offset'];
+                    $new_tstamp = $var_tstamp;
+                    $offset = (int) $time_def['offset'];
+                    if (isset($time_def['offset_timeunit'])) {
+                        $offset = $this->CalcByTimeunit($time_def['offset_timeunit'], $offset);
+                    }
+                    $new_tstamp += $offset;
                     if ($random > 0) {
                         $new_tstamp += rand(0, $random);
                     }
@@ -582,6 +635,8 @@ class SwitchtimeDetermination extends IPSModule
                         $this->SendDebug(__FUNCTION__, '... change ' . $dif . 's delayed', 0);
                     }
                 }
+            } else {
+                $this->SendDebug(__FUNCTION__, '... event is inactive', 0);
             }
             if ($delayed == false) {
                 if ($new_tstamp == time()) {

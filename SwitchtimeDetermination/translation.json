@@ -12,6 +12,9 @@
 			"Reference variable for \"{$name}\" must have variable profile \"~UnixTimestamp\"":
 				"Referenzvariable für \"{$name}\" muss Variablenprofil \"~UnixTimestamp\" haben",
 
+			"__function__": "CheckModuleUpdate",
+            "Add time unit and recalculate time offset": "Zeiteinheit hinzufügen und Zeitversatz umberechnen",
+
 			"__properties__": "",
 			"Disable instance": "Instanz deaktivieren",
 
