@@ -761,6 +761,12 @@ class SwitchtimeDetermination extends IPSModule
                             $this->SetValue($ident, $s);
                         }
                     }
+                    if ($dif2action) {
+                        if ($sleep4action == 0 || $sleep4action > $dif2action) {
+                            $sleep4action = $dif2action;
+                        }
+                    }
+                    $this->SendDebug(__FUNCTION__, '... execute in ' . $dif2action . 's', 0);
                     continue;
                 }
 

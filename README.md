@@ -133,6 +133,9 @@ Es werden keine Variablenprofile angelegt.
 
 ## 7. Versions-Historie
 
+- 1.3.1 @ 08.10.2022 18:11
+  - Fix: Behandlung von Sonderfällen bei der Auslösung von Aktionen
+
 - 1.3 @ 08.10.2022 15:50
   - Neu: Umstellung des opionalen PHP-Scripts durch eine Liste von Aktionen (zur erleichterten Konfiguration)
   - Fix: Behandlung von Sonderfällen bei der Auslösung von Aktionen
