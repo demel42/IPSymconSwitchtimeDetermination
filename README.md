@@ -61,27 +61,28 @@ Es gibt keine Funktionen des Moduls.
 
 #### Properties
 
-| Eigenschaft               | Typ      | Standardwert | Beschreibung |
-| :------------------------ | :------  | :----------- | :----------- |
-| Instanz deaktivieren      | boolean  | false        | Instanz temporär deaktivieren |
-|                           |          |              | |
-| Bereich-Definition        | array    |              | Defintion der Schaltzeit-Bereiche |
-| ... Name                  | string   |              | Bezeichnung des Schaltzeit-Bereichs |
-| ... Referenz-Variable     | integer  | 0            | Variable vom Typ ~UnixTimestamp _[1]_ |
-| ... Zeitversatz           | integer  | 0            | Zeitversatz in Sekunden |
-|                           |          |              | |
-| Wochenplan-Ereignis       | integer  | 0            | Wochenplan _[2]_ |
-|                           |          |              | |
-| zufälliger Zeitversatz    | integer  | 0            | Maximaler zusätzlicher zufälliger Zeitversatz in Sekunden, der zu der ermittelten Zeit hinzugefügt wird. |
-|                           |          |              | |
-| Erkennung von Feiertagen  | integer  | 0            | Skript zur Erkennung von Feiertagen (behandeln wie Sonntage) _[3]_ |
-|                           |          |              | |
-| sofort neu ermitteln      | boolean  | true         | Schaltzeiten unverzüglich nach Änderungen neu ermitteln _[4]_ |
-|                           | string   | 00:00:00     | Uhrzeit für die zyklische Ermittlung der Schaltzeiten |
-|                           |          |              | |
-| Format                    | string   |              | Format für die String-Repräsentation _[6]_ |
-|                           |          |              | |
-| PHP-Script                | string   |              | optionaler PHP-Code, der zum Schaltzeitpunkt ausgeführt wird _[5]_ |
+| Eigenschaft               | Typ     | Standardwert | Beschreibung |
+| :------------------------ | :------ | :----------- | :----------- |
+| Instanz deaktivieren      | boolean | false        | Instanz temporär deaktivieren |
+|                           |         |              | |
+| Bereich-Definition        | array   |              | Defintion der Schaltzeit-Bereiche |
+| ... ID                    | integer |              | Fortlaufende Nummer der Bereiche, nur informativ und wird bei der Darstellung der Instanzseite ermittelt  |
+| ... Name                  | string  |              | Bezeichnung des Schaltzeit-Bereichs |
+| ... Referenz-Variable     | integer | 0            | Variable vom Typ ~UnixTimestamp _[1]_ |
+| ... Zeitversatz           | integer | 0            | Zeitversatz in Sekunden |
+|                           |         |              | |
+| Wochenplan-Ereignis       | integer | 0            | Wochenplan _[2]_ |
+|                           |         |              | |
+| zufälliger Zeitversatz    | integer | 0            | Maximaler zusätzlicher zufälliger Zeitversatz in Sekunden, der zu der ermittelten Zeit hinzugefügt wird. |
+|                           |         |              | |
+| Erkennung von Feiertagen  | integer | 0            | Skript zur Erkennung von Feiertagen (behandeln wie Sonntage) _[3]_ |
+|                           |         |              | |
+| sofort neu ermitteln      | boolean | true         | Schaltzeiten unverzüglich nach Änderungen neu ermitteln _[4]_ |
+|                           | string  | 00:00:00     | Uhrzeit für die zyklische Ermittlung der Schaltzeiten |
+|                           |         |              | |
+| Format                    | string  |              | Format für die String-Repräsentation _[5]_ |
+|                           |         |              | |
+| Aktionen                  | array   |              | Liste von optionalen Aktionen, die bei dem Erreichen einer Schaltzeit ausgeführt werden soll _[6]_ |
 
 _[1]_: wird keine Referenzvariable angegeben, wird damit automatisch der Startpunkt der enstrepchenden Aktion aus dem WOchenplan genommen - damit
 handelt es sich dann also eine feste Uhrzeit-Angabe.
@@ -102,11 +103,12 @@ Tage zweifach stattfinden).
 Daher wird die Variable-Veränderung solange verzögert, bis die Uhrzeit in der Vergangenheit liegt.
 Zusätzlich bzw wenn der Schalter inaktiv ist, wird die Neuermittlung der Schaltzeitpunkte zu der angegebenen Uhrzeit durchgeführt.
 
-_[5]_: der Code wird zum Schaltzeitpunkt ausgeführt, den jeweils ausgelösten Schaltzeitpunkt kann man der Variable *_IPS['actionID']* entnehmen.
-
-_[6]_: hiermit kann für jede Zeitstempel-Variable eine Zusatz-Variable erzeugt werden, die den Zeitstempel formatiert enthält,
+_[5]_: hiermit kann für jede Zeitstempel-Variable eine Zusatz-Variable erzeugt werden, die den Zeitstempel formatiert enthält,
 unterstützte Formate siehe [hier](https://www.php.net/manual/de/datetime.format.php).
 Beispiel: mit der Formatangabe `H:i` wird die Uhrzeit des Zeitstempels als _hh:mm_ in einer zusätzlichen String-Variable abgelegt.
+
+_[6]_: Liste von Aktionen, die bei Erreichen eines Schaltzeitpunkts durchgeführt werden soll.<br>
+Die anzugebenden _ID_ referenziert die ID aus der _Bereich-Definition_; es werden dann alle Aktionen mit der angegebenen _ID_ ausgeführt.
 
 #### Aktionen
 
@@ -130,6 +132,12 @@ Es werden keine Variablenprofile angelegt.
 ### Quellen
 
 ## 7. Versions-Historie
+
+- 1.3 @ 08.10.2022 15:50
+  - Neu: Umstellung des opionalen PHP-Scripts durch eine Liste von Aktionen (zur erleichterten Konfiguration)
+  - Fix: Behandlung von Sonderfällen bei der Auslösung von Aktionen
+  - Neu: Absicherung des Zugriffs via Semaphore
+  - Neu: Panel "Modul-Aktivität" zur besseren Nachvollziehbarkeit der Abläufe
 
 - 1.2 @ 07.10.2022 13:49
   - Angabe der Zeiteinheit zum Zeitversatz (zur bequemeren Benutzung)

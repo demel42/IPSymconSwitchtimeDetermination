@@ -8,12 +8,16 @@
 			"Weekplan event has the wrong event type": "Wochenplan-Ereignis hat den falschen Ereignis-Typ",
 
 			"At least one range must be defined": "Mindestens ein Bereich muss definiert sein",
-			"Name for range {$action} must be defined": "Name für Bereich {$action} muss definiert sein",
+			"Name for range {$actionID} must be defined": "Name für Bereich {$actionID} muss definiert sein",
 			"Reference variable for \"{$name}\" must have variable profile \"~UnixTimestamp\"":
 				"Referenzvariable für \"{$name}\" muss Variablenprofil \"~UnixTimestamp\" haben",
+			"Action in row {$row} has a unknown switchtime range ID {$actionID}":
+				"Aktion in Zeile {$row} hat eine unbekannte Schaltzeit-Bereich-ID {$actionID}",
 
 			"__function__": "CheckModuleUpdate",
             "Add time unit and recalculate time offset": "Zeiteinheit hinzufügen und Zeitversatz umberechnen",
+			"Fix timeunit of offset": "Einheit des Zeitversatzes korrigieren",
+			"Create actions from possibly configured PHP code": "Erzeuge Aktionen aus eventuell konfiguriertem PHP-Code",
 
 			"__properties__": "",
 			"Disable instance": "Instanz deaktivieren",
@@ -23,6 +27,7 @@
 			"Reference variable": "Referenz-Variable",
 			"Time offset": "Zeitversatz",
 			" Seconds": " Sekunden",
+			"Unit": "Einheit",
 
 			"Weekplan event": "Wochenplan-Ereignis",
 
@@ -35,7 +40,10 @@
 			"Format for the additional representation of the timestamp as string, see https://www.php.net/manual/de/datetime.format.php":
 				"Format für die zusätzliche Darstellung des Zeitstempels als String, siehe https://www.php.net/manual/de/datetime.format.php",
 
-			"PHP code to be executed at switchtime": "PHP-Code, der zum Schaltzeitpunkt ausgeführt werden soll",
+			"Actions to be optionally executed at the switchtime": "Aktionen, die optional zum Schaltzeitpunkt ausgeführt werden sollen",
+			"Actions": "Aktionen",
+			"ID": "ID",
+			"Action": "Aktion",
 
 			"Redetermine switchtimes immediately after changes": "Schaltzeiten unverzüglich nach Änderungen neu ermitteln",
 			"Time for the cyclic determination of the switchtimes": "Uhrzeit für die zyklische Ermittlung der Schaltzeiten",
