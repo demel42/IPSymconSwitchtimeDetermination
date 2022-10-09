@@ -133,6 +133,9 @@ Es werden keine Variablenprofile angelegt.
 
 ## 7. Versions-Historie
 
+- 1.3.2 @ 09.10.2022 14:52
+  - Fix: Problem bei der wiederholten Ermittlung von Schalt-Zeitstempeln bei "unverzüglich Neuermittlung"
+
 - 1.3.1 @ 08.10.2022 18:11
   - Fix: Behandlung von Sonderfällen bei der Auslösung von Aktionen
 
