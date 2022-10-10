@@ -231,17 +231,7 @@ class SwitchtimeDetermination extends IPSModule
 
         $actions = json_decode($this->ReadPropertyString('actions'), true);
         foreach ($actions as $a) {
-            $action = json_decode($a['action'], true);
-            if (isset($action['parameters']['TARGET'])) {
-                $objID = $action['parameters']['TARGET'];
-                if (IPS_ObjectExists($objID)) {
-                    $this->RegisterReference($objID);
-                }
-            }
-            if (isset($action['parameters']['SCRIPT'])) {
-                $text = $action['parameters']['SCRIPT'];
-                $this->MaintainReferences4Script($text);
-            }
+            $this->MaintainReferences4Action($a['action']);
         }
 
         $time_definitions = json_decode($this->ReadPropertyString('time_definitions'), true);
@@ -645,12 +635,14 @@ class SwitchtimeDetermination extends IPSModule
 
             $cond = [];
             $new_tstamp = 0;
-            $dif2action = 0;
+            $diff2check = 0;
+            $diff2action = 0;
             $delayed = false;
 
             $ident = self::$ident_raw_pfx . $actionID;
             $old_tstamp = $this->GetValue($ident);
             $old_sec = $this->GetSecFromMidnight(date('H:i:s', $old_tstamp));
+            $old_date = $this->GetTstampOfMidnight($old_tstamp);
             $this->SendDebug(__FUNCTION__, 'name=' . $time_def['name'] . ', actionID=' . $actionID . ', old_tstamp=' . $this->date2str($old_tstamp), 0);
 
             $exec_tstamp = isset($jstate['executed'][$actionID]) ? $jstate['executed'][$actionID] : 0;
@@ -668,12 +660,14 @@ class SwitchtimeDetermination extends IPSModule
                     $cond[] = 'ref=' . $this->date2str($ref_tstamp);
 
                     $offset = (int) $time_def['offset'];
-                    if (isset($time_def['offset_timeunit'])) {
-                        $offset = $this->CalcByTimeunit($time_def['offset_timeunit'], $offset);
-                    }
                     if ($offset) {
+                        if (isset($time_def['offset_timeunit'])) {
+                            $offset = $this->CalcByTimeunit($time_def['offset_timeunit'], $offset);
+                            $cond[] = 'offset=' . $time_def['offset'] . $this->Timeunit2Suffix($time_def['offset_timeunit']);
+                        } else {
+                            $cond[] = 'offset=' . $offset . 's';
+                        }
                         $new_tstamp += $offset;
-                        $cond[] = 'offset=' . $offset . 's';
                     }
                 } else {
                     $ref_tstamp = 0;
@@ -754,20 +748,6 @@ class SwitchtimeDetermination extends IPSModule
                     }
                 }
 
-                $was_today = $force == false && $exec_date == $now_date && $exec_sec <= $now_sec;
-                $will_today = $new_date == $now_date && $new_sec > $now_sec;
-                $this->SendDebug(__FUNCTION__, '... was_today=' . $this->bool2str($was_today) . ', will_today=' . $this->bool2str($will_today), 0);
-
-                /*
-                if ($new_sec > $now_sec && $was_today == false) {
-                 */
-                if ($new_tstamp > $now_tstamp) {
-                    $dif2action = $new_tstamp - $now_tstamp;
-                }
-                /*
-                }
-                 */
-
                 if ($new_tstamp == $old_tstamp) {
                     $this->SendDebug(__FUNCTION__, '... ident=' . $ident . ' remains unchanged at ' . $this->date2str($new_tstamp), 0);
                     if ($date_format != '') {
@@ -777,38 +757,62 @@ class SwitchtimeDetermination extends IPSModule
                             $this->SetValue($ident, $s);
                         }
                     }
-                    if ($dif2action) {
-                        if ($sleep4action == 0 || $sleep4action > $dif2action) {
-                            $sleep4action = $dif2action;
+                    if ($new_tstamp > $now_tstamp) {
+                        $diff2action = $new_tstamp - $now_tstamp;
+                    }
+                    if ($diff2action) {
+                        if ($sleep4action == 0 || $sleep4action > $diff2action) {
+                            $sleep4action = $diff2action;
                         }
-                        $this->SendDebug(__FUNCTION__, '... execute in ' . $dif2action . 's', 0);
+                        $this->SendDebug(__FUNCTION__, '... execute in ' . $diff2action . 's', 0);
                     }
                     continue;
                 }
 
+                if ($new_tstamp > $now_tstamp) {
+                    $diff2action = $new_tstamp - $now_tstamp;
+                }
                 $this->SendDebug(__FUNCTION__, '... update_promptly=' . $this->bool2str($update_promptly) . ', force=' . $this->bool2str($force), 0);
                 if ($update_promptly && $force == false) {
+                    $was_today = $force == false && $exec_date == $now_date && $exec_sec <= $now_sec;
+                    $will_today = $new_date == $now_date && $new_sec > $now_sec;
+                    $this->SendDebug(__FUNCTION__, '... was_today=' . $this->bool2str($was_today) . ', will_today=' . $this->bool2str($will_today), 0);
+
+                    $diff2check = 0;
+                    // kommt noch heute, daher keine Änderung des TS auf > heute
+                    // -> aktion ausführen und danach neu berechnen
+                    if ($was_today == false && $old_date == $now_date && $new_date > $now_date) {
+                        $diff2check = $now_date + $old_sec - $now_tstamp + 1;
+                        if ($old_tstamp > $now_tstamp) {
+                            $diff2action = $old_tstamp - $now_tstamp;
+                        }
+                    }
+                    // war heute und würde heute erneut kommen und die Uhrzeit wäre später
+                    // -> erst auswerten, wenn die Uhrzeit verstrichen ist
                     if ($new_sec > $now_sec && $was_today && $will_today) {
-                        $dif2check = $now_date + $new_sec - $now_tstamp;
-                        if ($sleep4check == 0 || $sleep4check > $dif2check) {
-                            $sleep4check = $dif2check;
+                        $diff2check = $now_date + $new_sec - $now_tstamp;
+                    }
+                    if ($diff2check) {
+                        if ($sleep4check == 0 || $sleep4check > $diff2check) {
+                            $sleep4check = $diff2check;
                         }
                         $delayed = true;
-                        $this->SendDebug(__FUNCTION__, '... change ' . $dif2check . 's delayed', 0);
+                        $this->SendDebug(__FUNCTION__, '... change ' . $diff2check . 's delayed', 0);
+                        $msg = 'time-definition ' . $actionID . ': delayed (only run once a day)';
+                        $this->AddModuleActivity($msg);
                     }
-                    $msg = 'time-definition ' . $actionID . ': delayed (only run once a day)';
-                    $this->AddModuleActivity($msg);
+                }
+                if ($diff2action) {
+                    if ($sleep4action == 0 || $sleep4action > $diff2action) {
+                        $sleep4action = $diff2action;
+                    }
+                    $this->SendDebug(__FUNCTION__, '... execute in ' . $diff2action . 's', 0);
                 }
             } else {
                 $this->SendDebug(__FUNCTION__, '... event is inactive', 0);
             }
+
             if ($delayed == false) {
-                if ($dif2action) {
-                    if ($sleep4action == 0 || $sleep4action > $dif2action) {
-                        $sleep4action = $dif2action;
-                    }
-                    $this->SendDebug(__FUNCTION__, '... execute in ' . $dif2action . 's', 0);
-                }
                 if ($new_tstamp == time()) {
                     $new_tstamp += 1; // damit der neuen Wert auf jeden Fall in der Zukunft liegt
                 }
@@ -834,28 +838,26 @@ class SwitchtimeDetermination extends IPSModule
         if ($next_tstamp < $now_tstamp) {
             $next_tstamp += 86400;
         }
-        $dif2check = $next_tstamp - $now_tstamp;
-        if ($sleep4check == 0 || $sleep4check > $dif2check) {
-            $sleep4check = $dif2check;
+        $diff2check = $next_tstamp - $now_tstamp;
+        $this->SendDebug(__FUNCTION__, 'next check=' . $this->date2str($next_tstamp) . ', diff2check=' . $diff2check, 0);
+        if ($sleep4check == 0 || $sleep4check > $diff2check) {
+            $sleep4check = $diff2check;
         }
         if ($sleep4check && $sleep4check == $sleep4action) {
             $sleep4check++;
         }
-        $this->MaintainTimer('CheckConditions', $sleep4check * 1000);
 
+        $this->SendDebug(__FUNCTION__, 'sleep4check=' . $sleep4check . ', sleep4action=' . $sleep4action, 0);
+        $this->MaintainTimer('CheckConditions', $sleep4check * 1000);
         $this->MaintainTimer('ExecuteAction', $sleep4action * 1000);
 
         IPS_SemaphoreLeave($this->SemaphoreID);
 
-        $msg = 'next check=';
         $timer = $this->GetTimerByName('CheckConditions');
-        $ts = $timer['NextRun'];
-        $msg .= $ts ? date('H:i:s', $ts) : '-';
+        $msg = 'next check=' . $this->date2str($timer['NextRun']);
 
-        $msg .= ', next execution=';
         $timer = $this->GetTimerByName('ExecuteAction');
-        $ts = $timer['NextRun'];
-        $msg .= $ts ? date('H:i:s', $ts) : '-';
+        $msg .= ', next execution=' . $this->date2str($timer['NextRun']);
 
         $this->AddModuleActivity($msg);
     }
@@ -926,12 +928,12 @@ class SwitchtimeDetermination extends IPSModule
                 $this->SendDebug(__FUNCTION__, '... new exec_tstamp=' . $this->date2str($now_tstamp), 0);
             }
             if ($cur_tstamp > $now_tstamp) {
-                $dif2action = $cur_tstamp - $now_tstamp;
-                if ($dif2action) {
-                    if ($sleep4action == 0 || $sleep4action > $dif2action) {
-                        $sleep4action = $dif2action;
+                $diff2action = $cur_tstamp - $now_tstamp;
+                if ($diff2action) {
+                    if ($sleep4action == 0 || $sleep4action > $diff2action) {
+                        $sleep4action = $diff2action;
                     }
-                    $this->SendDebug(__FUNCTION__, '... execute in ' . $dif2action . 's', 0);
+                    $this->SendDebug(__FUNCTION__, '... execute in ' . $diff2action . 's', 0);
                 }
             }
         }
@@ -943,10 +945,8 @@ class SwitchtimeDetermination extends IPSModule
 
         IPS_SemaphoreLeave($this->SemaphoreID);
 
-        $msg = 'next execution=';
         $timer = $this->GetTimerByName('ExecuteAction');
-        $ts = $timer['NextRun'];
-        $msg .= $ts ? date('H:i:s', $ts) : '-';
+        $msg = 'next execution=' . $this->date2str($timer['NextRun']);
 
         $this->AddModuleActivity($msg);
     }
