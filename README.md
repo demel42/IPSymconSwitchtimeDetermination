@@ -17,19 +17,19 @@
 ## 1. Funktionsumfang
 
 Berechnung von täglichen Schaltzeiten.
-Die Verwendung von festen Zeit in Ereignissen gibt es unter Umständen ein paar Nachteile:<br>
+Die Verwendung von festen Zeit in Ereignissen gibt es unter Umständen ein paar Nachteile:
 - bei Verwendung von Astrozeiten (z.B. Sonnenauf- und Untergange) kann es sein, das z.B. im Sommer die morgendliche Aktion sehr früh erfolgt
-(weil Sonnenaufgang schon um kurz nach 5 Uhr ist), also vo dem Aufstehen.<br>
+(weil Sonnenaufgang schon um kurz nach 5 Uhr ist), also vo dem Aufstehen.
 - keine Berücksichtigung von Wochenende und Feiertagen
 
-Daher bietet das Modul die Möglichkeit, das etwas besser zu konfigurieren:<br>
-- beliebig viele Schaltzeitpunkte pro Tag<br>
-- Angabe der zulässigen Grenzen der Schaltzeiten pro Schaltzeitpunkt<br>
-- zu jedem Schaltzeitpunkt wird eine Referenzvariable angegeben (z.B. die Variablen aus der _Location_-Instanz)<br>
-- optionale Angabe eines Zeitversatzes zu jedem Bereich<br>
-- Unterstützung von Wochentagen durch Nutzung eines Wochenplans<br>
-- Ermittlung des neuen Zeitpunkts direkt bei Änderung der zugrunde liegenden Referenz-Variablen oder zu einer bestimmten Uhrzeit<br>
-- optionale Ermittlung eines zusätzlichen zufälligen Zeitversatzes<br>
+Daher bietet das Modul die Möglichkeit, das etwas besser zu konfigurieren:
+- beliebig viele Schaltzeitpunkte pro Tag
+- Angabe der zulässigen Grenzen der Schaltzeiten pro Schaltzeitpunkt
+- zu jedem Schaltzeitpunkt wird eine Referenzvariable angegeben (z.B. die Variablen aus der _Location_-Instanz)
+- optionale Angabe eines Zeitversatzes zu jedem Bereich
+- Unterstützung von Wochentagen durch Nutzung eines Wochenplans
+- Ermittlung des neuen Zeitpunkts direkt bei Änderung der zugrunde liegenden Referenz-Variablen oder zu einer bestimmten Uhrzeit
+- optionale Ermittlung eines zusätzlichen zufälligen Zeitversatzes
 
 Neben der Ermittlung der Schaltzeiten und setzen der Variablen, können
 - diese auch in einem beliebigen Datumsformat als String-Variablen abgelegt werden
