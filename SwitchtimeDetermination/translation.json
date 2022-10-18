@@ -9,25 +9,30 @@
 
 			"At least one range must be defined": "Mindestens ein Bereich muss definiert sein",
 			"Name for range {$actionID} must be defined": "Name für Bereich {$actionID} muss definiert sein",
-			"Reference variable for \"{$name}\" must have variable profile \"~UnixTimestamp\"":
-				"Referenzvariable für \"{$name}\" muss Variablenprofil \"~UnixTimestamp\" haben",
-			"Action in row {$row} has a unknown switchtime range ID {$actionID}":
-				"Aktion in Zeile {$row} hat eine unbekannte Schaltzeit-Bereich-ID {$actionID}",
+			"Reference variable for range {$actionID} must have variable profile \"~UnixTimestamp\"":
+				"Referenzvariable für range {$actionID} muss Variablenprofil \"~UnixTimestamp\" haben",
+			"Events for range {$actionID} must by cyclic events": "Events for range {$actionID} must be cyclic events",
 
 			"__function__": "CheckModuleUpdate",
-            "Add time unit and recalculate time offset": "Zeiteinheit hinzufügen und Zeitversatz umberechnen",
+			"Add time unit and recalculate time offset": "Zeiteinheit hinzufügen und Zeitversatz umberechnen",
 			"Fix timeunit of offset": "Einheit des Zeitversatzes korrigieren",
 			"Create actions from possibly configured PHP code": "Erzeuge Aktionen aus eventuell konfiguriertem PHP-Code",
+			"Move actions to the switchtime range definitions": "Aktionen in die Schaltzeit-Bereich-Definitionen verschieben",
 
 			"__properties__": "",
 			"Disable instance": "Instanz deaktivieren",
 
 			"Switchtime range definitions": "Schaltzeit-Bereich-Definitionen",
+			"ID": "ID",
 			"Name of the switchtime range": "Bezeichnung des Schaltzeit-Bereichs",
 			"Reference variable": "Referenz-Variable",
 			"Time offset": "Zeitversatz",
 			" Seconds": " Sekunden",
 			"Unit": "Einheit",
+			"Actions": "Aktionen",
+			"Action": "Aktion",
+			"Events": "Ereignisse",
+			"Event": "Ereignis",
 
 			"Weekplan event": "Wochenplan-Ereignis",
 
@@ -40,11 +45,6 @@
 			"Format for the additional representation of the timestamp as string, see https://www.php.net/manual/de/datetime.format.php":
 				"Format für die zusätzliche Darstellung des Zeitstempels als String, siehe https://www.php.net/manual/de/datetime.format.php",
 
-			"Actions to be optionally executed at the switchtime": "Aktionen, die optional zum Schaltzeitpunkt ausgeführt werden sollen",
-			"Actions": "Aktionen",
-			"ID": "ID",
-			"Action": "Aktion",
-
 			"Redetermine switchtimes immediately after changes": "Schaltzeiten unverzüglich nach Änderungen neu ermitteln",
 			"Time for the cyclic determination of the switchtimes": "Uhrzeit für die zyklische Ermittlung der Schaltzeiten",
 
@@ -52,8 +52,9 @@
 			" (formatted)": " (formatiert)",
 
 			"__actions__": "",
-			"Check conditions": "Bedingungen prüfen",
 			"Create weekplan event": "Wochenplan-Ereignis erzeugen",
+			"Check conditions": "Bedingungen prüfen",
+			"Check conditions, ignore today's run": "Bedingungen prüfen, heutigen Lauf ignorieren",
 
 			"__action__": "CreateWeekplanEvent",
 			"Rest period": "Ruhephase",

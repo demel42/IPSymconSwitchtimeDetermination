@@ -30,6 +30,10 @@ Daher bietet das Modul die Möglichkeit, das etwas besser zu konfigurieren:<br>
 - Unterstützung von Wochentagen durch Nutzung eines Wochenplans<br>
 - Ermittlung des neuen Zeitpunkts direkt bei Änderung der zugrunde liegenden Referenz-Variablen oder zu einer bestimmten Uhrzeit<br>
 - optionale Ermittlung eines zusätzlichen zufälligen Zeitversatzes<br>
+Neben der Ermittlung der Schaltzeiten, können
+- diese auch als beliebiger String angelegt werden
+- Ereignisse angegeben werde, die mit den Schaltzeiten synchronisiert werden
+- Aktionen zum Ereigniszeitpunkt ausgelöst werden
 
 ## 2. Voraussetzungen
 
@@ -53,7 +57,8 @@ Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/d
 
 ## 4. Funktionsreferenz
 
-Es gibt keine Funktionen des Moduls.
+`SwitchtimeDetermination_CheckConditions(bool $force)`<br>
+Schaltzeiten neu berechnen, dabei ggfs (_force=true_) ein eventuell heute bereits erfolgter Lauf ignorieren
 
 ## 5. Konfiguration
 
@@ -70,32 +75,40 @@ Es gibt keine Funktionen des Moduls.
 | ... Name                  | string  |              | Bezeichnung des Schaltzeit-Bereichs |
 | ... Referenz-Variable     | integer | 0            | Variable vom Typ ~UnixTimestamp _[1]_ |
 | ... Zeitversatz           | integer | 0            | Zeitversatz in Sekunden |
+| ... Ereignisse            | array   |              | optionale Liste von Ereignissen, die bei Setzen einer Schaltzeit angepasst werden sollen _[2]_ |
+| ... Aktionen              | array   |              | optionale Liste von Aktionen, die bei dem Erreichen einer Schaltzeit ausgeführt werden sollen |
 |                           |         |              | |
-| Wochenplan-Ereignis       | integer | 0            | Wochenplan _[2]_ |
+| Wochenplan-Ereignis       | integer | 0            | Wochenplan _[3]_ |
 |                           |         |              | |
 | zufälliger Zeitversatz    | integer | 0            | Maximaler zusätzlicher zufälliger Zeitversatz in Sekunden, der zu der ermittelten Zeit hinzugefügt wird. |
 |                           |         |              | |
-| Erkennung von Feiertagen  | integer | 0            | Skript zur Erkennung von Feiertagen (behandeln wie Sonntage) _[3]_ |
+| Erkennung von Feiertagen  | integer | 0            | Skript zur Erkennung von Feiertagen (behandeln wie Sonntage) _[4]_ |
 |                           |         |              | |
-| sofort neu ermitteln      | boolean | true         | Schaltzeiten unverzüglich nach Änderungen neu ermitteln _[4]_ |
+| sofort neu ermitteln      | boolean | true         | Schaltzeiten unverzüglich nach Änderungen neu ermitteln _[5]_ |
 |                           | string  | 00:00:00     | Uhrzeit für die zyklische Ermittlung der Schaltzeiten |
 |                           |         |              | |
-| Format                    | string  |              | Format für die String-Repräsentation _[5]_ |
+| Format                    | string  |              | Format für die String-Repräsentation _[6]_ |
 |                           |         |              | |
-| Aktionen                  | array   |              | Liste von optionalen Aktionen, die bei dem Erreichen einer Schaltzeit ausgeführt werden soll _[6]_ |
 
 _[1]_: wird keine Referenzvariable angegeben, wird damit automatisch der Startpunkt der enstrepchenden Aktion aus dem WOchenplan genommen - damit
 handelt es sich dann also eine feste Uhrzeit-Angabe.
 
-_[2]_: der Wochenplan muss den Bereich _Ruhephase_ mit der ID 0 enthalten sowie für jeden Bereich eine Aktion mit der ID ab 1 (entsprechend der Position in der Tabelle).<br>
-Im Plan wird dann für jede Aktion der Bereich definiert, innerhalb dess eine gültige Schlatzeit liegen darf; werden die Grenzen verletzt wird der jeweilige
-Grenzwert (als die Anfangs- bzw Endezeit) verwendet. Die anderen Zeiten sind komplett durch die _Ruhephase_ gefüllt.
+_[2]_: Liste von Ereignissen, die bei Setzen einer Schaltzeit angepasst werden sollen.<br>
+Dabei muss es sich um _zyklische Ereignisse_ handeln; _Datumsintervall_ und _Zeitintervall_ sollte auf _einmalig_ stehen. Bei Setzen des korrespondierenden Schaltzeitpunkts
+- wird _Datumsintervall_ und _Zeitintervall_ auf _einmalig_ geändert
+- ist ein Schaltzeitpunkt vorhanden wird Datum und Zeit gemäß Schaltzeitpunkt gesetzt und das Ereignis auf _aktiv_ gesetzt
+- ist kein Schaltzeitpunkt vorhanden (weil z.B. der Wochenplan inaktiv ist) wird das Ereignis auf _inaktiv_ gesetzt
 
-_[3]_: Beispiel-Script siehe [docs/retrieve_holidays.php](docs/retrieve_holidays.php)<br>
+_[3]_: der Wochenplan muss den Bereich _Ruhephase_ mit der ID 0 enthalten sowie für jeden Bereich eine Aktion mit der ID ab 1 (entsprechend der Position in der Tabelle).<br>
+Im Plan wird dann für jede Aktion der Bereich definiert, innerhalb dess eine gültige Schaltzeit liegen darf; werden die Grenzen verletzt wird der jeweilige
+Grenzwert (also die Anfangs- bzw Endezeit) verwendet, damit ist die Schaltzeit immer innerhalb des angegebenen Bereichs.
+Die anderen Zeiträume im Wochenplan sind durch die _Ruhephase_ zu belegen.
+
+_[4]_: Beispiel-Script siehe [docs/retrieve_holidays.php](docs/retrieve_holidays.php)<br>
 Übergeben wird als _TSTAMP_ der zu prüfenden Zeitpunkt; der Rückgabewert ist im positiven Fall entweder _"true"_, _true_ oder der Name des Feiertags, andernfalls
 "false", _false_ oder ein Leerstring.
 
-_[4]_: ist der Schalter aktiv, werden die Schaltzeiten neu ermitteln, sobald sich ein Referenzwert ändert oder den Wochenplan angepasst wird.<br>
+_[5]_: ist der Schalter aktiv, werden die Schaltzeiten neu ermitteln, sobald sich ein Referenzwert ändert oder den Wochenplan angepasst wird.<br>
 Dabei gibt es noch eine Besonderheit: in manchen Module werden nur Uhrzeiten verwendet, nicht ein Zeitstempel; das kann u.U. zu dopelter Auslösung führen.
 Z.b. Astro-basierten Zeiten können sich so ändern, das bei Auslösen des ersten Zeitpunkts der nächste Zeitpunkt nicht nur gemäß Zeitstempeln sondern auch
 nach Uhrzeit in der Zukuft liegt (im Herbst ist der Sonnenaufgang jeden Tag um bis zu 2 min später - damit könnte, wenn nur die Uhrzeit betrachtet wird, der Schaltvorgang am gleichen
@@ -103,19 +116,17 @@ Tage zweifach stattfinden).
 Daher wird die Variable-Veränderung solange verzögert, bis die Uhrzeit in der Vergangenheit liegt.
 Zusätzlich bzw wenn der Schalter inaktiv ist, wird die Neuermittlung der Schaltzeitpunkte zu der angegebenen Uhrzeit durchgeführt.
 
-_[5]_: hiermit kann für jede Zeitstempel-Variable eine Zusatz-Variable erzeugt werden, die den Zeitstempel formatiert enthält,
+_[6]_: hiermit kann für jede Zeitstempel-Variable eine Zusatz-Variable erzeugt werden, die den Zeitstempel formatiert enthält,
 unterstützte Formate siehe [hier](https://www.php.net/manual/de/datetime.format.php).
 Beispiel: mit der Formatangabe `H:i` wird die Uhrzeit des Zeitstempels als _hh:mm_ in einer zusätzlichen String-Variable abgelegt.
 
-_[6]_: Liste von Aktionen, die bei Erreichen eines Schaltzeitpunkts durchgeführt werden soll.<br>
-Die anzugebenden _ID_ referenziert die ID aus der _Bereich-Definition_; es werden dann alle Aktionen mit der angegebenen _ID_ ausgeführt.
-
 #### Aktionen
 
-| Bezeichnung                  | Beschreibung |
-| :--------------------------- | :----------- |
-| Wochenplan-Ereignis erzeugen | Wochenplan passend zu den definierten Schaltzeit-Bereichen unterhalb der Instanz anlegen |
-| Bedingungen prüfen           | Bedingungen prüfen und ggfs Variablen der Schlatzeiten anppassen |
+| Bezeichnung                                  | Beschreibung |
+| :------------------------------------------- | :----------- |
+| Wochenplan-Ereignis erzeugen                 | Wochenplan passend zu den definierten Schaltzeit-Bereichen unterhalb der Instanz anlegen |
+| Bedingungen prüfen                           | Bedingungen prüfen und ggfs Variablen der Schaltzeiten anppassen |
+| Bedingungen prüfen, heutigen Lauf ignorieren | Bedingungen prüfen und ggfs Variablen der Schaltzeiten anppassen, dabei wird ein eventuell heute bereits erfolgter Lauf ignoriert  |
 
 ### Variablenprofile
 
@@ -132,6 +143,14 @@ Es werden keine Variablenprofile angelegt.
 ### Quellen
 
 ## 7. Versions-Historie
+
+- 1.4 @ 18.10.2022 10:47
+  - Neu: optionale Liste von Ereignissen könne auf den Schaltzeitpunkt gesetzt werden
+  - Neu: Oberfläche umstrukturiert
+  - Fix: weitere Korrekturen
+
+- 1.3.4 @ 16.10.2022 14:23
+  - Fix: weitere Korrekturen
 
 - 1.3.3 @ 10.10.2022 16:58
   - Fix: Problem bei Veränderung von Schalt-Zeitstempeln bei "unverzüglich Neuermittlung"
