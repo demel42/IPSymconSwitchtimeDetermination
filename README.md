@@ -31,7 +31,7 @@ Daher bietet das Modul die Möglichkeit, das etwas besser zu konfigurieren:<br>
 - Ermittlung des neuen Zeitpunkts direkt bei Änderung der zugrunde liegenden Referenz-Variablen oder zu einer bestimmten Uhrzeit<br>
 - optionale Ermittlung eines zusätzlichen zufälligen Zeitversatzes<br>
 
-Neben der Ermittlung der Schaltzeiten und setzen der Variable, können
+Neben der Ermittlung der Schaltzeiten und setzen der Variablen, können
 - diese auch in einem beliebigen Datumsformat als String-Variablen abgelegt werden
 - Ereignisse angegeben werde, die mit den Schaltzeiten synchronisiert werden
 - Aktionen zum Ereigniszeitpunkt ausgelöst werden
