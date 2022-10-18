@@ -1044,7 +1044,7 @@ class SwitchtimeDetermination extends IPSModule
             $this->SendDebug(__FUNCTION__, '... exec_tstamp=' . $this->date2str($exec_tstamp), 0);
 
             // es gibt manchmal gewisse Verzögerungen im Timer-Aufruf
-			$diff = $now_tstamp - $cur_tstamp;
+            $diff = $now_tstamp - $cur_tstamp;
             if ($diff >= 0 && $diff < 5) {
                 if (isset($time_def['actions'])) {
                     $_msg = [];
