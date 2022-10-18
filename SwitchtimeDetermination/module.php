@@ -872,6 +872,22 @@ class SwitchtimeDetermination extends IPSModule
                             $this->SetValue($ident, $s);
                         }
                     }
+
+                    if (isset($time_def['events'])) {
+                        $_msg = [];
+
+                        $events = $time_def['events'];
+                        foreach ($events as $e) {
+                            $r = $this->UpdateEvent($e['eventID'], $new_tstamp);
+                            $_msg[] = (string) $e['eventID'] . ($r ? '=ok' : '=fail');
+                        }
+
+                        if ($_msg != []) {
+                            $msg = 'time-definition ' . $actionID . ': update event ' . implode(', ', $_msg);
+                            $this->AddModuleActivity($msg);
+                        }
+                    }
+
                     if ($new_tstamp > $now_tstamp) {
                         if ($action_tstamp == 0 || $new_tstamp < $action_tstamp) {
                             $action_tstamp = $new_tstamp;
@@ -1030,7 +1046,7 @@ class SwitchtimeDetermination extends IPSModule
             // es gibt manchmal gewisse Verzögerungen im Timer-Aufruf
             if (($now_tstamp - $cur_tstamp) < 5) {
                 if (isset($time_def['actions'])) {
-                    $e = [];
+                    $_msg = [];
 
                     $actions = $time_def['actions'];
                     for ($i = 0; $i < count($actions); $i++) {
@@ -1040,11 +1056,11 @@ class SwitchtimeDetermination extends IPSModule
                         $params['actionID'] = $actionID;
                         @$r = IPS_RunAction($action['actionID'], $params);
                         $this->SendDebug(__FUNCTION__, '... IPS_RunAction(' . $action['actionID'] . ', ' . print_r($params, true) . ') => ' . $r, 0);
-                        $e[] = (string) $i . ($r ? '=ok' : '=fail');
+                        $_msg[] = (string) $i . ($r ? '=ok' : '=fail');
                     }
 
-                    if ($e != []) {
-                        $msg = 'time-definition ' . $actionID . ': run entry ' . implode(', ', $e);
+                    if ($_msg != []) {
+                        $msg = 'time-definition ' . $actionID . ': run entry ' . implode(', ', $_msg);
                         $this->AddModuleActivity($msg);
                     }
                 }

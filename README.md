@@ -145,6 +145,9 @@ Es werden keine Variablenprofile angelegt.
 
 ## 7. Versions-Historie
 
+- 1.4.2 @ 18.10.2022 16:26
+  - Fix: Ereignissen auch setzen, wenn der Zeitstempel unverändert bleibt
+
 - 1.4.1 @ 18.10.2022 15:22
   - Fix: Verbesserung in MessageSink() um VM_UPDATE-Meldungen zu vermeiden
 
