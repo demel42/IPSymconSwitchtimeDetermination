@@ -145,6 +145,9 @@ Es werden keine Variablenprofile angelegt.
 
 ## 7. Versions-Historie
 
+- 1.4.1 @ 18.10.2022 15:22
+  - Fix: Verbesserung in MessageSink() um VM_UPDATE-Meldungen zu vermeiden
+
 - 1.4 @ 18.10.2022 10:47
   - Neu: optionale Liste von Ereignissen könne auf den Schaltzeitpunkt gesetzt werden
   - Neu: Oberfläche umstrukturiert
