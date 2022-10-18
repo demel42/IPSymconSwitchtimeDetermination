@@ -30,8 +30,9 @@ Daher bietet das Modul die Möglichkeit, das etwas besser zu konfigurieren:<br>
 - Unterstützung von Wochentagen durch Nutzung eines Wochenplans<br>
 - Ermittlung des neuen Zeitpunkts direkt bei Änderung der zugrunde liegenden Referenz-Variablen oder zu einer bestimmten Uhrzeit<br>
 - optionale Ermittlung eines zusätzlichen zufälligen Zeitversatzes<br>
-Neben der Ermittlung der Schaltzeiten, können
-- diese auch als beliebiger String angelegt werden
+
+Neben der Ermittlung der Schaltzeiten und setzen der Variable, können
+- diese auch in einem beliebigen Datumsformat als String-Variablen abgelegt werden
 - Ereignisse angegeben werde, die mit den Schaltzeiten synchronisiert werden
 - Aktionen zum Ereigniszeitpunkt ausgelöst werden
 
