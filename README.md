@@ -145,6 +145,9 @@ Es werden keine Variablenprofile angelegt.
 
 ## 7. Versions-Historie
 
+- 1.4.3 @ 18.10.2022 19:50
+  - Fix: es wurden fehlerhafterweise bei jedem Schaltzeitpunkt alle Bereich ausgeführt
+
 - 1.4.2 @ 18.10.2022 16:26
   - Fix: Ereignissen auch setzen, wenn der Zeitstempel unverändert bleibt
 
