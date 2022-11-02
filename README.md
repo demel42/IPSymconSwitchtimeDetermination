@@ -145,6 +145,9 @@ Es werden keine Variablenprofile angelegt.
 
 ## 7. Versions-Historie
 
+- 1.5 @ 02.11.2022 09:57
+  - Fix: Fehler beim Hinzufügen von Schaltzeit-Bereichen
+
 - 1.4.3 @ 18.10.2022 19:50
   - Fix: es wurden fehlerhafterweise bei jedem Schaltzeitpunkt alle Bereich ausgeführt
 

@@ -450,7 +450,7 @@ class SwitchtimeDetermination extends IPSModule
                 ],
                 [
                     'name'     => 'events',
-                    'add'      => '[]',
+                    'add'      => [],
                     'edit'     => [
                         'type'     => 'List',
                         'rowCount' => 4,
@@ -473,7 +473,7 @@ class SwitchtimeDetermination extends IPSModule
                 ],
                 [
                     'name'     => 'actions',
-                    'add'      => '[]',
+                    'add'      => [],
                     'edit'     => [
                         'type'     => 'List',
                         'rowCount' => 4,
