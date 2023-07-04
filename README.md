@@ -145,6 +145,11 @@ Es werden keine Variablenprofile angelegt.
 
 ## 7. Versions-Historie
 
+- 1.6 @ 04.07.2023 14:44
+  - update submodule CommonStubs
+    - Absicherung bei Zugriff auf Objekte und Inhalte
+    - Vorbereitung auf IPS 7 / PHP 8.2
+
 - 1.5 @ 02.11.2022 09:57
   - Fix: Fehler beim Hinzufügen von Schaltzeit-Bereichen
 
