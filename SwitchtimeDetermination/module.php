@@ -10,20 +10,24 @@ class SwitchtimeDetermination extends IPSModule
     use SwitchtimeDetermination\StubsCommonLib;
     use SwitchtimeDeterminationLocalLib;
 
-    private static $semaphoreTM = 5 * 1000;
-
     public static $ident_raw_pfx = 'SWITCHTIME_';
     public static $ident_fmt_pfx = 'FORMAT_';
 
-    private $ModuleDir;
+    private static $semaphoreTM = 5 * 1000;
+
     private $SemaphoreID;
 
     public function __construct(string $InstanceID)
     {
         parent::__construct($InstanceID);
 
-        $this->ModuleDir = __DIR__;
+        $this->CommonContruct(__DIR__);
         $this->SemaphoreID = __CLASS__ . '_' . $InstanceID;
+    }
+
+    public function __destruct()
+    {
+        $this->CommonDestruct();
     }
 
     public function Create()
@@ -49,8 +53,10 @@ class SwitchtimeDetermination extends IPSModule
         $this->RegisterPropertyString('update_time', '{"hour":0,"minute":0,"second":0}');
         $this->RegisterPropertyBoolean('update_promptly', true);
 
-        $this->RegisterAttributeString('UpdateInfo', '');
         $this->RegisterAttributeString('state', json_encode([]));
+
+        $this->RegisterAttributeString('UpdateInfo', json_encode([]));
+        $this->RegisterAttributeString('ModuleStats', json_encode([]));
 
         $this->InstallVarProfiles(false);
 

@@ -145,6 +145,10 @@ Es werden keine Variablenprofile angelegt.
 
 ## 7. Versions-Historie
 
+- 1.7 @ 21.09.2023 14:19
+  - Neu: Ermittlung von Speicherbedarf und Laufzeit (aktuell und für 31 Tage) und Anzeige im Panel "Information"
+  - update submodule CommonStubs
+
 - 1.6 @ 04.07.2023 14:44
   - Vorbereitung auf IPS 7 / PHP 8.2
   - update submodule CommonStubs
